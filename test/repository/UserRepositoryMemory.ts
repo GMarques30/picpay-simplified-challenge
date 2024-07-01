@@ -8,7 +8,7 @@ export class UserRepositoryMemory implements UserRepository {
     this.users = [];
   }
 
-  async saveUser(user: any): Promise<void> {
+  async saveUser(user: User): Promise<void> {
     this.users.push(user);
   }
 
@@ -18,5 +18,9 @@ export class UserRepositoryMemory implements UserRepository {
 
   async getUserByDocument(document: string): Promise<User | undefined> {
     return this.users.find((user) => user.getDocument() === document);
+  }
+
+  async getUserByUserId(userId: string): Promise<User | undefined> {
+    return this.users.find((user) => user.userId === userId);
   }
 }
