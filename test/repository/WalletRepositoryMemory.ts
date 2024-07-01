@@ -11,4 +11,8 @@ export class WalletRepositoryMemory implements WalletRepository {
   async saveWallet(wallet: Wallet): Promise<void> {
     this.wallets.push(wallet);
   }
+
+  async getWalletByWalletId(walletId: string): Promise<Wallet | undefined> {
+    return this.wallets.find((wallet) => wallet.walletId === walletId);
+  }
 }
