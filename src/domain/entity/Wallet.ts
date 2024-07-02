@@ -9,18 +9,9 @@ export class Wallet {
     this._balance = balance;
   }
 
-  static create(userId: string) {
-    const walletId = crypto.randomUUID();
-    const balance = 0;
-    return new Wallet(walletId, userId, balance);
-  }
-
-  static restore(walletId: string, userId: string, balance: number) {
-    return new Wallet(walletId, userId, balance);
-  }
-
-  getBalance() {
-    return this._balance;
+  deposit(amount: number) {
+    if (amount <= 0) throw new Error("Invalid deposit");
+    this._balance += amount;
   }
 
   withdraw(amount: number) {
@@ -29,8 +20,17 @@ export class Wallet {
     this._balance -= amount;
   }
 
-  deposit(amount: number) {
-    if (amount <= 0) throw new Error("Invalid deposit");
-    this._balance += amount;
+  getBalance() {
+    return this._balance;
+  }
+
+  static create(userId: string) {
+    const walletId = crypto.randomUUID();
+    const balance = 0;
+    return new Wallet(walletId, userId, balance);
+  }
+
+  static restore(walletId: string, userId: string, balance: number) {
+    return new Wallet(walletId, userId, balance);
   }
 }
