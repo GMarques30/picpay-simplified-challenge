@@ -3,9 +3,8 @@ import { WalletRepository } from "../repository/WalletRepository";
 export class GetWallet {
   constructor(readonly walletRepository: WalletRepository) {}
 
-  async execute({ walletId }: GetWalletInput): Promise<GetWalletOutput> {
-    const wallet = await this.walletRepository.getWalletByWalletId(walletId);
-    if (!wallet) throw new Error("Wallet does not exists");
+  async execute({ walletId }: Input): Promise<Output> {
+    const wallet = await this.walletRepository.getByWalletId(walletId);
     return {
       walletId: wallet.walletId,
       userId: wallet.userId,
@@ -14,11 +13,11 @@ export class GetWallet {
   }
 }
 
-type GetWalletInput = {
+type Input = {
   walletId: string;
 };
 
-type GetWalletOutput = {
+type Output = {
   walletId: string;
   userId: string;
   balance: number;

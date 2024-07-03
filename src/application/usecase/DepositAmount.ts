@@ -8,31 +8,27 @@ export class DepositAmount {
     readonly transactionRepository: TransactionRepository
   ) {}
 
-  async execute({
-    walletId,
-    amount,
-  }: DepositAmountInput): Promise<DepositAmountOutput> {
-    const wallet = await this.walletRepository.getWalletByWalletId(walletId);
-    if (!wallet) throw new Error("Wallet does not exists");
+  async execute({ walletId, amount }: Input): Promise<Output> {
+    const wallet = await this.walletRepository.getByWalletId(walletId);
     wallet.deposit(amount);
     const transaction = Transaction.create(
       wallet.userId,
       wallet.userId,
       amount
     );
-    await this.transactionRepository.saveTransaction(transaction);
-    await this.walletRepository.updateWallet(wallet);
+    await this.transactionRepository.save(transaction);
+    await this.walletRepository.update(wallet);
     return {
       transactionId: transaction.transactionId,
     };
   }
 }
 
-type DepositAmountInput = {
+type Input = {
   walletId: string;
   amount: number;
 };
 
-type DepositAmountOutput = {
+type Output = {
   transactionId: string;
 };

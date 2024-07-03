@@ -8,7 +8,7 @@ export class TransactionRepositoryMemory implements TransactionRepository {
     this.transactions = [];
   }
 
-  async saveTransaction(transaction: Transaction): Promise<void> {
+  async save(transaction: Transaction): Promise<void> {
     this.transactions.push(transaction);
   }
 }

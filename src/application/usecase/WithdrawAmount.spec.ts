@@ -126,6 +126,6 @@ test("Não deve ser possivel fazer uma retirada em uma carteira inexistente", ()
     amount: 100,
   };
   expect(async () => await sut.execute(input)).rejects.toThrow(
-    new Error("Wallet does not exists")
+    new Error("Wallet not found")
   );
 });

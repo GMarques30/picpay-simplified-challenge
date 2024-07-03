@@ -48,6 +48,6 @@ test("Não deve ser possivel obter os dados de uma carteira inexistente", () => 
     walletId: crypto.randomUUID(),
   };
   expect(async () => await sut.execute(input)).rejects.toThrow(
-    new Error("Wallet does not exists")
+    new Error("Wallet not found")
   );
 });

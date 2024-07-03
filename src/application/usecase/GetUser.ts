@@ -3,8 +3,8 @@ import { UserRepository } from "../repository/UserRepository";
 export class GetUser {
   constructor(readonly userRepository: UserRepository) {}
 
-  async execute({ userId }: GetUserInput): Promise<GetUserOutput> {
-    const user = await this.userRepository.getUserByUserId(userId);
+  async execute({ userId }: Input): Promise<Output> {
+    const user = await this.userRepository.getByUserId(userId);
     if (!user) throw new Error("User does not exists");
     return {
       userId: user.userId,
@@ -16,11 +16,11 @@ export class GetUser {
   }
 }
 
-type GetUserInput = {
+type Input = {
   userId: string;
 };
 
-type GetUserOutput = {
+type Output = {
   userId: string;
   name: string;
   document: string;

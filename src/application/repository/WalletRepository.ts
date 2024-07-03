@@ -1,7 +1,7 @@
 import { Wallet } from "../../domain/entity/Wallet";
 
 export interface WalletRepository {
-  saveWallet(wallet: Wallet): Promise<void>;
-  getWalletByWalletId(walletId: string): Promise<Wallet | undefined>;
-  updateWallet(wallet: Wallet): Promise<void>;
+  save(wallet: Wallet): Promise<void>;
+  getByWalletId(walletId: string): Promise<Wallet>;
+  update(wallet: Wallet): Promise<void>;
 }
