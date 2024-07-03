@@ -32,6 +32,6 @@ test("Não deve ser possivel obter os dados de um usuario que não existe", asyn
     userId: crypto.randomUUID(),
   };
   expect(async () => await sut.execute(input)).rejects.toThrow(
-    new Error("User does not exists")
+    new Error("User not found")
   );
 });

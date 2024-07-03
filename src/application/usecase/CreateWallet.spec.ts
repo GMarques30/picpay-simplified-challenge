@@ -30,6 +30,6 @@ test("Não deve ser possivel criar uma carteira sem um usario existente", async 
     userId: crypto.randomUUID(),
   };
   expect(async () => await sut.execute(inputCreateWallet)).rejects.toThrow(
-    new Error("User does not exists")
+    new Error("User not found")
   );
 });

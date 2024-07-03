@@ -16,10 +16,10 @@ export class TransferAmount {
   async execute({ payerId, payeeId, amount }: Input): Promise<Output> {
     const payer = await this.walletRepository.getByWalletId(payerId);
     const payee = await this.walletRepository.getByWalletId(payeeId);
-    const isThePayerACustomer = await this.userRepository.checkIfUserIsCustomer(
-      payer.userId
-    );
-    if (!isThePayerACustomer) throw new Error("Sellers cannot make transfers");
+    const accountIsTypeCustomer =
+      await this.userRepository.checkIfUserIsCustomer(payer.userId);
+    if (!accountIsTypeCustomer)
+      throw new Error("Sellers cannot make transfers");
     MakeTransfer.transfer(payer, payee, amount);
     const transaction = Transaction.create(payer.userId, payee.userId, amount);
     const isAuthorized = await this.transactionGateway.authorizeTransaction();

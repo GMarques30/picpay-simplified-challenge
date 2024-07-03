@@ -20,8 +20,10 @@ export class UserRepositoryMemory implements UserRepository {
     return this.users.find((user) => user.getDocument() === document);
   }
 
-  async getByUserId(userId: string): Promise<User | undefined> {
-    return this.users.find((user) => user.userId === userId);
+  async getByUserId(userId: string): Promise<User> {
+    const user = this.users.find((user) => user.userId === userId);
+    if (!user) throw new Error("User not found");
+    return user;
   }
 
   async checkIfUserIsCustomer(userId: string): Promise<boolean> {

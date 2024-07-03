@@ -21,7 +21,7 @@ it("Deve ser possivel criar um usuario cliente", async () => {
   expect(output.userId).toBeDefined();
 });
 
-it("Deve ser possivel criar um usuario vendedor", async () => {
+it("Deve ser possivel criar um usuario lojista", async () => {
   const input = {
     name: "John Doe",
     document: "90689024000192",

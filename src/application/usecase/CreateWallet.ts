@@ -9,8 +9,7 @@ export class CreateWallet {
   ) {}
 
   async execute({ userId }: Input): Promise<Output> {
-    const userExists = await this.userRepository.getByUserId(userId);
-    if (!userExists) throw new Error("User does not exists");
+    await this.userRepository.getByUserId(userId);
     const wallet = Wallet.create(userId);
     await this.walletRepository.save(wallet);
     return {

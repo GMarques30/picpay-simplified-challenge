@@ -5,7 +5,6 @@ export class GetUser {
 
   async execute({ userId }: Input): Promise<Output> {
     const user = await this.userRepository.getByUserId(userId);
-    if (!user) throw new Error("User does not exists");
     return {
       userId: user.userId,
       name: user.getName(),
