@@ -22,8 +22,8 @@ export class TransferAmount {
       throw new Error("Sellers cannot make transfers");
     MakeTransfer.transfer(payer, payee, amount);
     const transaction = Transaction.create(
-      payer.userId,
-      payee.userId,
+      payer.walletId,
+      payee.walletId,
       amount,
       "transfer"
     );

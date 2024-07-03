@@ -12,8 +12,8 @@ export class WithdrawAmount {
     const wallet = await this.walletRepository.getByWalletId(walletId);
     wallet.withdraw(amount);
     const transaction = Transaction.create(
-      wallet.userId,
-      wallet.userId,
+      wallet.walletId,
+      wallet.walletId,
       amount,
       "withdraw"
     );

@@ -12,8 +12,8 @@ export class DepositAmount {
     const wallet = await this.walletRepository.getByWalletId(walletId);
     wallet.deposit(amount);
     const transaction = Transaction.create(
-      wallet.userId,
-      wallet.userId,
+      wallet.walletId,
+      wallet.walletId,
       amount,
       "deposit"
     );

@@ -10,6 +10,7 @@ import { CreateWallet } from "./CreateWallet";
 import { DepositAmount } from "./DepositAmount";
 import { GetWallet } from "./GetWallet";
 import { TransferAmount } from "./TransferAmount";
+import { GetTransaction } from "./GetTransaction";
 
 let userRepository: UserRepository;
 let walletRepository: WalletRepository;
@@ -19,6 +20,7 @@ let createUser: CreateUser;
 let createWallet: CreateWallet;
 let getWallet: GetWallet;
 let depositAmount: DepositAmount;
+let getTransaction: GetTransaction;
 let sut: TransferAmount;
 
 beforeEach(() => {
@@ -32,6 +34,7 @@ beforeEach(() => {
   createWallet = new CreateWallet(walletRepository, userRepository);
   getWallet = new GetWallet(walletRepository);
   depositAmount = new DepositAmount(walletRepository, transactionRepository);
+  getTransaction = new GetTransaction(transactionRepository);
   sut = new TransferAmount(
     walletRepository,
     userRepository,
@@ -47,7 +50,6 @@ test("Deve ser possivel realizar uma transferencia entre dois clientes", async (
       authorization: true,
     },
   });
-
   const inputCreateUser1 = {
     name: "John Doe",
     document: "97456321558",
@@ -88,6 +90,20 @@ test("Deve ser possivel realizar uma transferencia entre dois clientes", async (
     walletId: outputCreateWallet2.walletId,
   });
   expect(outputGetWallet2.balance).toBe(50);
+  const inputGetTransaction = {
+    transactionId: outputTransferAmount.transactionId,
+  };
+  const outputGetTransaction = await getTransaction.execute(
+    inputGetTransaction
+  );
+  expect(outputGetTransaction.transactionId).toBe(
+    outputTransferAmount.transactionId
+  );
+  expect(outputGetTransaction.payerId).toBe(inputTransferAmount.payerId);
+  expect(outputGetTransaction.payeeId).toBe(inputTransferAmount.payeeId);
+  expect(outputGetTransaction.amount).toBe(inputTransferAmount.amount);
+  expect(outputGetTransaction.status).toBe("transfer");
+  expect(outputGetTransaction.occuredAt).toEqual(expect.any(Date));
 });
 
 test("Deve ser possivel realizar uma transferencia entre um pagador do tipo cliente e um recebedor do tipo lojista", async () => {

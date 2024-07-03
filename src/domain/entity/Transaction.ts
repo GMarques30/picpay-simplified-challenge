@@ -27,6 +27,10 @@ export class Transaction {
     this.occuredAt = occuredAt;
   }
 
+  getStatus() {
+    return this.status.value;
+  }
+
   static create(
     payerId: string,
     payeeId: string,
