@@ -1,8 +1,14 @@
+import {
+  TransactionFactory,
+  TransactionStatus,
+} from "../value-object/TransactionStatus";
+
 export class Transaction {
   readonly transactionId: string;
   readonly payerId: string;
   readonly payeeId: string;
   readonly amount: number;
+  readonly status: TransactionStatus;
   readonly occuredAt: Date;
 
   private constructor(
@@ -10,19 +16,33 @@ export class Transaction {
     payerId: string,
     payeeId: string,
     amount: number,
+    status: string,
     occuredAt: Date
   ) {
     this.transactionId = transactionId;
     this.payerId = payerId;
     this.payeeId = payeeId;
     this.amount = amount;
+    this.status = TransactionFactory.create(status);
     this.occuredAt = occuredAt;
   }
 
-  static create(payerId: string, payeeId: string, amount: number) {
+  static create(
+    payerId: string,
+    payeeId: string,
+    amount: number,
+    status: string
+  ) {
     const transactionId = crypto.randomUUID();
     const occuredAt = new Date();
-    return new Transaction(transactionId, payerId, payeeId, amount, occuredAt);
+    return new Transaction(
+      transactionId,
+      payerId,
+      payeeId,
+      amount,
+      status,
+      occuredAt
+    );
   }
 
   static restore(
@@ -30,6 +50,7 @@ export class Transaction {
     payerId: string,
     payeeId: string,
     amount: number,
+    status: string,
     occuredAt: string
   ) {
     return new Transaction(
@@ -37,6 +58,7 @@ export class Transaction {
       payerId,
       payeeId,
       amount,
+      status,
       new Date(occuredAt)
     );
   }

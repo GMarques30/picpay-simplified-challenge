@@ -21,7 +21,12 @@ export class TransferAmount {
     if (!accountIsTypeCustomer)
       throw new Error("Sellers cannot make transfers");
     MakeTransfer.transfer(payer, payee, amount);
-    const transaction = Transaction.create(payer.userId, payee.userId, amount);
+    const transaction = Transaction.create(
+      payer.userId,
+      payee.userId,
+      amount,
+      "transfer"
+    );
     const isAuthorized = await this.transactionGateway.authorizeTransaction();
     if (!isAuthorized.data.authorization)
       throw new Error("Unauthorized transaction");

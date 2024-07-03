@@ -14,7 +14,8 @@ export class WithdrawAmount {
     const transaction = Transaction.create(
       wallet.userId,
       wallet.userId,
-      amount
+      amount,
+      "withdraw"
     );
     await this.transactionRepository.save(transaction);
     await this.walletRepository.update(wallet);
