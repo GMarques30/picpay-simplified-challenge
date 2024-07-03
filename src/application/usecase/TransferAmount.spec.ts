@@ -11,15 +11,13 @@ import { DepositAmount } from "./DepositAmount";
 import { GetWallet } from "./GetWallet";
 import { TransferAmount } from "./TransferAmount";
 import { GetTransaction } from "./GetTransaction";
-import { TransactionGatewayHttp } from "../../infra/gateway/TransactionGatewayHttp";
-import { AxiosAdapter, HttpClient } from "../../infra/http/HttpClient";
 import { NotificationGateway } from "../gateway/NotificationGateway";
 import { NotificationGatewayFake } from "../../../test/gateway/NotificationGatewayFake";
+import { TransactionGatewayFake } from "../../../test/gateway/TransactionGatewayFake";
 
-jest.mock("../../infra/http/HttpClient");
+jest.mock("./../gateway/TransactionGateway");
 jest.mock("../gateway/NotificationGateway");
 
-let httpClient: HttpClient;
 let userRepository: UserRepository;
 let walletRepository: WalletRepository;
 let transactionRepository: TransactionRepository;
@@ -34,11 +32,12 @@ let getTransaction: GetTransaction;
 let sut: TransferAmount;
 
 beforeEach(() => {
-  httpClient = new AxiosAdapter();
   userRepository = new UserRepositoryMemory();
   walletRepository = new WalletRepositoryMemory();
   transactionRepository = new TransactionRepositoryMemory();
-  transactionGateway = new TransactionGatewayHttp(httpClient);
+  transactionGateway = {
+    authorize: jest.fn(),
+  };
   notificationGateway = new NotificationGatewayFake();
   notifySpy = jest.spyOn(notificationGateway, "notify");
   createUser = new CreateUser(userRepository);
@@ -56,11 +55,6 @@ beforeEach(() => {
 });
 
 test("Deve ser possivel realizar uma transferencia entre dois clientes", async () => {
-  (httpClient.get as jest.Mock).mockResolvedValue({
-    data: {
-      authorization: true,
-    },
-  });
   const inputCreateUser1 = {
     name: "John Doe",
     document: "97456321558",
@@ -119,11 +113,6 @@ test("Deve ser possivel realizar uma transferencia entre dois clientes", async (
 });
 
 test("Deve ser possivel realizar uma transferencia entre um pagador do tipo cliente e um recebedor do tipo lojista", async () => {
-  (httpClient.get as jest.Mock).mockResolvedValue({
-    data: {
-      authorization: true,
-    },
-  });
   const inputCreateUser1 = {
     name: "John Doe",
     document: "97456321558",
@@ -168,11 +157,6 @@ test("Deve ser possivel realizar uma transferencia entre um pagador do tipo clie
 });
 
 test("Não deve ser possivel realizar uma transferencia se o pagador for do tipo lojista", async () => {
-  (httpClient.get as jest.Mock).mockResolvedValue({
-    data: {
-      authorization: true,
-    },
-  });
   const inputCreateUser1 = {
     name: "John Doe",
     document: "90689024000192",
@@ -210,11 +194,9 @@ test("Não deve ser possivel realizar uma transferencia se o pagador for do tipo
 });
 
 test("Não deve ser possivel realizar uma transferencia se ela não foi autorizada", async () => {
-  (httpClient.get as jest.Mock).mockResolvedValue({
-    data: {
-      authorization: false,
-    },
-  });
+  (transactionGateway.authorize as jest.Mock).mockRejectedValue(
+    new Error("Unauthorized transaction")
+  );
   const inputCreateUser1 = {
     name: "John Doe",
     document: "97456321558",
