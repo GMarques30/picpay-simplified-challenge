@@ -1,5 +1,6 @@
 import { Transaction } from "../../domain/entity/Transaction";
 import { MakeTransfer } from "../../domain/service/MakeTransfer";
+import { NotificationGateway } from "../gateway/NotificationGateway";
 import { TransactionGateway } from "../gateway/TransactionGateway";
 import { TransactionRepository } from "../repository/TransactionRepository";
 import { UserRepository } from "../repository/UserRepository";
@@ -10,29 +11,32 @@ export class TransferAmount {
     readonly walletRepository: WalletRepository,
     readonly userRepository: UserRepository,
     readonly transactionRepository: TransactionRepository,
-    readonly transactionGateway: TransactionGateway
+    readonly transactionGateway: TransactionGateway,
+    readonly notificationGateway: NotificationGateway
   ) {}
 
   async execute({ payerId, payeeId, amount }: Input): Promise<Output> {
-    const payer = await this.walletRepository.getByWalletId(payerId);
-    const payee = await this.walletRepository.getByWalletId(payeeId);
+    const payerWallet = await this.walletRepository.getByWalletId(payerId);
+    const payeeWallet = await this.walletRepository.getByWalletId(payeeId);
     const accountIsTypeCustomer =
-      await this.userRepository.checkIfUserIsCustomer(payer.userId);
+      await this.userRepository.checkIfUserIsCustomer(payerWallet.userId);
     if (!accountIsTypeCustomer)
       throw new Error("Sellers cannot make transfers");
-    MakeTransfer.transfer(payer, payee, amount);
+    MakeTransfer.transfer(payerWallet, payeeWallet, amount);
     const transaction = Transaction.create(
-      payer.walletId,
-      payee.walletId,
+      payerWallet.walletId,
+      payeeWallet.walletId,
       amount,
       "transfer"
     );
-    const isAuthorized = await this.transactionGateway.authorizeTransaction();
-    if (!isAuthorized.data.authorization)
-      throw new Error("Unauthorized transaction");
-    await this.walletRepository.update(payer);
-    await this.walletRepository.update(payee);
+    await this.transactionGateway.authorize();
+    await this.walletRepository.update(payerWallet);
+    await this.walletRepository.update(payeeWallet);
     await this.transactionRepository.save(transaction);
+    const payeeAccount = await this.userRepository.getByUserId(
+      payeeWallet.userId
+    );
+    await this.notificationGateway.notify(payeeAccount.getEmail());
     return {
       transactionId: transaction.transactionId,
     };

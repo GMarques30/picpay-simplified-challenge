@@ -35,7 +35,6 @@ test("Deve ser possivel depositar um valor na carteira de um cliente", async () 
     password: "123456",
   };
   const outputCreateUser = await createUser.execute(inputCreateUser);
-  expect(outputCreateUser.userId).toBeDefined();
   const inputCreateWallet = {
     userId: outputCreateUser.userId,
   };
@@ -63,7 +62,6 @@ test("Não deve ser possivel realizar um deposito com um montante invalido", asy
     password: "123456",
   };
   const outputCreateUser = await createUser.execute(inputCreateUser);
-  expect(outputCreateUser.userId).toBeDefined();
   const inputCreateWallet = {
     userId: outputCreateUser.userId,
   };

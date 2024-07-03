@@ -38,7 +38,6 @@ test("Deve ser possivel retirar um montante na carteira de um cliente", async ()
     password: "123456",
   };
   const outputCreateUser = await createUser.execute(inputCreateUser);
-  expect(outputCreateUser.userId).toBeDefined();
   const inputCreateWallet = {
     userId: outputCreateUser.userId,
   };
@@ -52,8 +51,7 @@ test("Deve ser possivel retirar um montante na carteira de um cliente", async ()
     walletId: outputCreateWallet.walletId,
     amount: 100,
   };
-  const outputDepositAmount = await depositAmount.execute(inputDepositAmount);
-  expect(outputDepositAmount.transactionId).toBeDefined();
+  await depositAmount.execute(inputDepositAmount);
   const inputWithdrawAmount = {
     walletId: outputCreateWallet.walletId,
     amount: 50,
@@ -72,7 +70,6 @@ test("Não deve ser possivel retirar um montante com saldo insuficiente", async 
     password: "123456",
   };
   const outputCreateUser = await createUser.execute(inputCreateUser);
-  expect(outputCreateUser.userId).toBeDefined();
   const inputCreateWallet = {
     userId: outputCreateUser.userId,
   };
@@ -81,8 +78,7 @@ test("Não deve ser possivel retirar um montante com saldo insuficiente", async 
     walletId: outputCreateWallet.walletId,
     amount: 100,
   };
-  const outputDepositAmount = await depositAmount.execute(inputDepositAmount);
-  expect(outputDepositAmount.transactionId).toBeDefined();
+  await depositAmount.execute(inputDepositAmount);
   const inputWithdrawAmount = {
     walletId: outputCreateWallet.walletId,
     amount: 200,
@@ -100,7 +96,6 @@ test("Não deve ser possivel retirar com um montante invalido", async () => {
     password: "123456",
   };
   const outputCreateUser = await createUser.execute(inputCreateUser);
-  expect(outputCreateUser.userId).toBeDefined();
   const inputCreateWallet = {
     userId: outputCreateUser.userId,
   };
@@ -109,8 +104,7 @@ test("Não deve ser possivel retirar com um montante invalido", async () => {
     walletId: outputCreateWallet.walletId,
     amount: 100,
   };
-  const outputDepositAmount = await depositAmount.execute(inputDepositAmount);
-  expect(outputDepositAmount.transactionId).toBeDefined();
+  await depositAmount.execute(inputDepositAmount);
   const inputWithdrawAmount = {
     walletId: outputCreateWallet.walletId,
     amount: -100,

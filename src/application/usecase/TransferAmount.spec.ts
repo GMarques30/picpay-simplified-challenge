@@ -11,11 +11,21 @@ import { DepositAmount } from "./DepositAmount";
 import { GetWallet } from "./GetWallet";
 import { TransferAmount } from "./TransferAmount";
 import { GetTransaction } from "./GetTransaction";
+import { TransactionGatewayHttp } from "../../infra/gateway/TransactionGatewayHttp";
+import { AxiosAdapter, HttpClient } from "../../infra/http/HttpClient";
+import { NotificationGateway } from "../gateway/NotificationGateway";
+import { NotificationGatewayHttp } from "../../infra/gateway/NotificationGatewayHttp";
 
+jest.mock("../../infra/http/HttpClient");
+jest.mock("../gateway/NotificationGateway");
+
+let httpClient: HttpClient;
 let userRepository: UserRepository;
 let walletRepository: WalletRepository;
 let transactionRepository: TransactionRepository;
 let transactionGateway: TransactionGateway;
+let notificationGateway: NotificationGateway;
+let notifySpy: jest.SpyInstance;
 let createUser: CreateUser;
 let createWallet: CreateWallet;
 let getWallet: GetWallet;
@@ -24,12 +34,13 @@ let getTransaction: GetTransaction;
 let sut: TransferAmount;
 
 beforeEach(() => {
+  httpClient = new AxiosAdapter();
   userRepository = new UserRepositoryMemory();
   walletRepository = new WalletRepositoryMemory();
   transactionRepository = new TransactionRepositoryMemory();
-  transactionGateway = {
-    authorizeTransaction: jest.fn(),
-  };
+  transactionGateway = new TransactionGatewayHttp(httpClient);
+  notificationGateway = new NotificationGatewayHttp(httpClient);
+  notifySpy = jest.spyOn(notificationGateway, "notify");
   createUser = new CreateUser(userRepository);
   createWallet = new CreateWallet(walletRepository, userRepository);
   getWallet = new GetWallet(walletRepository);
@@ -39,16 +50,19 @@ beforeEach(() => {
     walletRepository,
     userRepository,
     transactionRepository,
-    transactionGateway
+    transactionGateway,
+    notificationGateway
   );
 });
 
 test("Deve ser possivel realizar uma transferencia entre dois clientes", async () => {
-  (transactionGateway.authorizeTransaction as jest.Mock).mockResolvedValue({
-    status: "success",
+  (httpClient.get as jest.Mock).mockResolvedValue({
     data: {
       authorization: true,
     },
+  });
+  (httpClient.post as jest.Mock).mockResolvedValue({
+    status: "success",
   });
   const inputCreateUser1 = {
     name: "John Doe",
@@ -82,6 +96,7 @@ test("Deve ser possivel realizar uma transferencia entre dois clientes", async (
   };
   const outputTransferAmount = await sut.execute(inputTransferAmount);
   expect(outputTransferAmount.transactionId).toBeDefined();
+  expect(notifySpy).toHaveBeenCalledTimes(1);
   const outputGetWallet1 = await getWallet.execute({
     walletId: outputCreateWallet1.walletId,
   });
@@ -107,13 +122,14 @@ test("Deve ser possivel realizar uma transferencia entre dois clientes", async (
 });
 
 test("Deve ser possivel realizar uma transferencia entre um pagador do tipo cliente e um recebedor do tipo lojista", async () => {
-  (transactionGateway.authorizeTransaction as jest.Mock).mockResolvedValue({
-    status: "success",
+  (httpClient.get as jest.Mock).mockResolvedValue({
     data: {
       authorization: true,
     },
   });
-
+  (httpClient.post as jest.Mock).mockResolvedValue({
+    status: "success",
+  });
   const inputCreateUser1 = {
     name: "John Doe",
     document: "97456321558",
@@ -146,6 +162,7 @@ test("Deve ser possivel realizar uma transferencia entre um pagador do tipo clie
   };
   const outputTransferAmount = await sut.execute(inputTransferAmount);
   expect(outputTransferAmount.transactionId).toBeDefined();
+  expect(notifySpy).toHaveBeenCalledTimes(1);
   const outputGetWallet1 = await getWallet.execute({
     walletId: outputCreateWallet1.walletId,
   });
@@ -157,13 +174,11 @@ test("Deve ser possivel realizar uma transferencia entre um pagador do tipo clie
 });
 
 test("Não deve ser possivel realizar uma transferencia se o pagador for do tipo lojista", async () => {
-  (transactionGateway.authorizeTransaction as jest.Mock).mockResolvedValue({
-    status: "success",
+  (httpClient.get as jest.Mock).mockResolvedValue({
     data: {
       authorization: true,
     },
   });
-
   const inputCreateUser1 = {
     name: "John Doe",
     document: "90689024000192",
@@ -194,20 +209,18 @@ test("Não deve ser possivel realizar uma transferencia se o pagador for do tipo
     payeeId: outputCreateWallet2.walletId,
     amount: 50,
   };
-
   expect(async () => await sut.execute(inputTransferAmount)).rejects.toThrow(
     new Error("Sellers cannot make transfers")
   );
+  expect(notifySpy).not.toHaveBeenCalled();
 });
 
 test("Não deve ser possivel realizar uma transferencia se ela não foi autorizada", async () => {
-  (transactionGateway.authorizeTransaction as jest.Mock).mockResolvedValue({
-    status: "fail",
+  (httpClient.get as jest.Mock).mockResolvedValue({
     data: {
       authorization: false,
     },
   });
-
   const inputCreateUser1 = {
     name: "John Doe",
     document: "97456321558",
@@ -238,8 +251,8 @@ test("Não deve ser possivel realizar uma transferencia se ela não foi autoriza
     payeeId: outputCreateWallet2.walletId,
     amount: 50,
   };
-
   expect(async () => await sut.execute(inputTransferAmount)).rejects.toThrow(
     new Error("Unauthorized transaction")
   );
+  expect(notifySpy).not.toHaveBeenCalled();
 });

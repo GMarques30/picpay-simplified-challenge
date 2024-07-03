@@ -1,12 +1,15 @@
 import { UserRepositoryMemory } from "../../../test/repository/UserRepositoryMemory";
 import { UserRepository } from "../repository/UserRepository";
 import { CreateUser } from "./CreateUser";
+import { GetUser } from "./GetUser";
 
 let userRepository: UserRepository;
+let getUser: GetUser;
 let sut: CreateUser;
 
 beforeEach(() => {
   userRepository = new UserRepositoryMemory();
+  getUser = new GetUser(userRepository);
   sut = new CreateUser(userRepository);
 });
 
@@ -19,6 +22,14 @@ it("Deve ser possivel criar um usuario cliente", async () => {
   };
   const output = await sut.execute(input);
   expect(output.userId).toBeDefined();
+  const outputGetUser = await getUser.execute({
+    userId: output.userId,
+  });
+  expect(outputGetUser.userId).toBe(output.userId);
+  expect(outputGetUser.name).toBe(input.name);
+  expect(outputGetUser.document).toBe(input.document);
+  expect(outputGetUser.email).toBe(input.email);
+  expect(outputGetUser.password).toBe(input.password);
 });
 
 it("Deve ser possivel criar um usuario lojista", async () => {
@@ -30,6 +41,14 @@ it("Deve ser possivel criar um usuario lojista", async () => {
   };
   const output = await sut.execute(input);
   expect(output.userId).toBeDefined();
+  const outputGetUser = await getUser.execute({
+    userId: output.userId,
+  });
+  expect(outputGetUser.userId).toBe(output.userId);
+  expect(outputGetUser.name).toBe(input.name);
+  expect(outputGetUser.document).toBe(input.document);
+  expect(outputGetUser.email).toBe(input.email);
+  expect(outputGetUser.password).toBe(input.password);
 });
 
 it("Não deve ser possivel criar um usuario com o mesmo email já cadastrado", async () => {

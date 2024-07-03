@@ -13,9 +13,12 @@ import { DepositAmount } from "./DepositAmount";
 import { GetTransaction } from "./GetTransaction";
 import { TransferAmount } from "./TransferAmount";
 import { WithdrawAmount } from "./WithdrawAmount";
+import { NotificationGateway } from "../gateway/NotificationGateway";
+import { NotificationGatewayHttp } from "../../infra/gateway/NotificationGatewayHttp";
 
-let HttpClient: HttpClient;
+let httpClient: HttpClient;
 let transactionGateway: TransactionGateway;
+let notificationGateway: NotificationGateway;
 let userRepository: UserRepository;
 let walletRepository: WalletRepository;
 let transactionRepository: TransactionRepository;
@@ -27,8 +30,9 @@ let transferAmount: TransferAmount;
 let sut: GetTransaction;
 
 beforeEach(async () => {
-  HttpClient = new AxiosAdapter();
-  transactionGateway = new TransactionGatewayHttp(HttpClient);
+  httpClient = new AxiosAdapter();
+  transactionGateway = new TransactionGatewayHttp(httpClient);
+  notificationGateway = new NotificationGatewayHttp(httpClient);
   userRepository = new UserRepositoryMemory();
   walletRepository = new WalletRepositoryMemory();
   transactionRepository = new TransactionRepositoryMemory();
@@ -40,7 +44,8 @@ beforeEach(async () => {
     walletRepository,
     userRepository,
     transactionRepository,
-    transactionGateway
+    transactionGateway,
+    notificationGateway
   );
   sut = new GetTransaction(transactionRepository);
 });

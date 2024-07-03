@@ -1,8 +1,3 @@
 export interface TransactionGateway {
-  authorizeTransaction(): Promise<OutputAuthorizeTransaction>;
+  authorize(): Promise<void>;
 }
-
-export type OutputAuthorizeTransaction = {
-  status: string;
-  data: { authorization: boolean };
-};
