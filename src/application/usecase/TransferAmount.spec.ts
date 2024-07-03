@@ -14,7 +14,7 @@ import { GetTransaction } from "./GetTransaction";
 import { TransactionGatewayHttp } from "../../infra/gateway/TransactionGatewayHttp";
 import { AxiosAdapter, HttpClient } from "../../infra/http/HttpClient";
 import { NotificationGateway } from "../gateway/NotificationGateway";
-import { NotificationGatewayHttp } from "../../infra/gateway/NotificationGatewayHttp";
+import { NotificationGatewayFake } from "../../../test/gateway/NotificationGatewayFake";
 
 jest.mock("../../infra/http/HttpClient");
 jest.mock("../gateway/NotificationGateway");
@@ -39,7 +39,7 @@ beforeEach(() => {
   walletRepository = new WalletRepositoryMemory();
   transactionRepository = new TransactionRepositoryMemory();
   transactionGateway = new TransactionGatewayHttp(httpClient);
-  notificationGateway = new NotificationGatewayHttp(httpClient);
+  notificationGateway = new NotificationGatewayFake();
   notifySpy = jest.spyOn(notificationGateway, "notify");
   createUser = new CreateUser(userRepository);
   createWallet = new CreateWallet(walletRepository, userRepository);
@@ -60,9 +60,6 @@ test("Deve ser possivel realizar uma transferencia entre dois clientes", async (
     data: {
       authorization: true,
     },
-  });
-  (httpClient.post as jest.Mock).mockResolvedValue({
-    status: "success",
   });
   const inputCreateUser1 = {
     name: "John Doe",
@@ -126,9 +123,6 @@ test("Deve ser possivel realizar uma transferencia entre um pagador do tipo clie
     data: {
       authorization: true,
     },
-  });
-  (httpClient.post as jest.Mock).mockResolvedValue({
-    status: "success",
   });
   const inputCreateUser1 = {
     name: "John Doe",
