@@ -1,8 +1,12 @@
-import { AccountFactory } from "../../domain/entity/Account";
+import { Account } from "../../domain/entity/Account";
+import { TransactionGateway } from "../gateway/TransactionGateway";
 import { AccountRepository } from "../repository/AccountRepository";
 
 export class CreateAccount {
-  constructor(readonly accountRepository: AccountRepository) {}
+  constructor(
+    readonly accountRepository: AccountRepository,
+    readonly transactionGateway: TransactionGateway
+  ) {}
 
   async execute({ name, document, email, password }: Input): Promise<Output> {
     const emailAlreadyRegistred = await this.accountRepository.getByEmail(
@@ -17,13 +21,9 @@ export class CreateAccount {
       throw new Error(
         "The provided CPF/CNPJ is already registered in our system"
       );
-    const account = AccountFactory.createAccount(
-      name,
-      document,
-      email,
-      password
-    );
+    const account = Account.create(name, email, password, document);
     await this.accountRepository.save(account);
+    await this.transactionGateway.createWallet(account.accountId);
     return {
       accountId: account.accountId,
     };

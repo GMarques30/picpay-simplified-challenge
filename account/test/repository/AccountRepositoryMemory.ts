@@ -23,12 +23,4 @@ export class AccountRepositoryMemory implements AccountRepository {
   async getByAccountId(accountId: string): Promise<Account | undefined> {
     return this.accounts.find((account) => account.accountId === accountId);
   }
-
-  async checkIfAccountIsCustomer(accountId: string): Promise<boolean> {
-    const account = this.accounts.find(
-      (account) => account.accountId === accountId
-    );
-    if (!account) throw new Error("Account not found");
-    return account.getDocument().length === 11 ? true : false;
-  }
 }

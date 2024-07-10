@@ -5,5 +5,4 @@ export interface AccountRepository {
   getByEmail(email: string): Promise<Account | undefined>;
   getByDocument(document: string): Promise<Account | undefined>;
   getByAccountId(accountId: string): Promise<Account | undefined>;
-  checkIfAccountIsCustomer(accountId: string): Promise<boolean>;
 }
