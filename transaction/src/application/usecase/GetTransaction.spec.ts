@@ -1,79 +1,81 @@
 import { TransactionRepositoryMemory } from "../../../test/repository/TransactionRepositoryMemory";
-import { WalletRepositoryMemory } from "../../../test/repository/WalletRepositoryMemory";
 import { TransactionRepository } from "../repository/TransactionRepository";
-import { WalletRepository } from "../repository/WalletRepository";
-import { CreateWallet } from "./CreateWallet";
-import { DepositAmount } from "./DepositAmount";
+import { CreateTransaction } from "./CreateTransaction";
 import { GetTransaction } from "./GetTransaction";
-import { WithdrawAmount } from "./WithdrawAmount";
 
-let walletRepository: WalletRepository;
 let transactionRepository: TransactionRepository;
-let createWallet: CreateWallet;
-let depositAmount: DepositAmount;
-let withdrawAmount: WithdrawAmount;
+let createTransaction: CreateTransaction;
 let sut: GetTransaction;
 
 beforeEach(async () => {
-  walletRepository = new WalletRepositoryMemory();
   transactionRepository = new TransactionRepositoryMemory();
-  createWallet = new CreateWallet(walletRepository);
-  depositAmount = new DepositAmount(walletRepository, transactionRepository);
-  withdrawAmount = new WithdrawAmount(walletRepository, transactionRepository);
+  createTransaction = new CreateTransaction(transactionRepository);
   sut = new GetTransaction(transactionRepository);
 });
 
 test("Deve ser possivel obter uma transaction do tipo deposit", async () => {
-  const inputCreateWallet = {
-    accountId: crypto.randomUUID(),
-  };
-  const outputCreateWallet = await createWallet.execute(inputCreateWallet);
-  const inputDepositAmount = {
-    walletId: outputCreateWallet.walletId,
+  const accountId = crypto.randomUUID();
+
+  const inputCreateTransaction = {
+    payerId: accountId,
+    payeeId: accountId,
     amount: 100,
+    type: "deposit",
   };
-  const outputDepositAmount = await depositAmount.execute(inputDepositAmount);
-  const inputGetTransaction = {
-    transactionId: outputDepositAmount.transactionId,
-  };
-  const outputGetTransaction = await sut.execute(inputGetTransaction);
-  expect(outputGetTransaction.transactionId).toBe(
-    outputDepositAmount.transactionId
+  const outputCreateTransaction = await createTransaction.execute(
+    inputCreateTransaction
   );
-  expect(outputGetTransaction.payerId).toBe(inputDepositAmount.walletId);
-  expect(outputGetTransaction.payeeId).toBe(inputDepositAmount.walletId);
-  expect(outputGetTransaction.amount).toBe(inputDepositAmount.amount);
-  expect(outputGetTransaction.status).toBe("deposit");
+  const outputGetTransaction = await sut.execute(outputCreateTransaction);
+  expect(outputGetTransaction.transactionId).toBe(
+    outputCreateTransaction.transactionId
+  );
+  expect(outputGetTransaction.payerId).toBe(inputCreateTransaction.payerId);
+  expect(outputGetTransaction.payeeId).toBe(inputCreateTransaction.payeeId);
+  expect(outputGetTransaction.amount).toBe(inputCreateTransaction.amount);
+  expect(outputGetTransaction.status).toBe(inputCreateTransaction.type);
   expect(outputGetTransaction.occuredAt).toEqual(expect.any(Date));
 });
 
 test("Deve ser possivel obter uma transaction do tipo withdraw", async () => {
-  const inputCreateWallet = {
-    accountId: crypto.randomUUID(),
-  };
-  const outputCreateWallet = await createWallet.execute(inputCreateWallet);
-  const inputDepositAmount = {
-    walletId: outputCreateWallet.walletId,
+  const accountId = crypto.randomUUID();
+
+  const inputCreateTransaction = {
+    payerId: accountId,
+    payeeId: accountId,
     amount: 100,
+    type: "withdraw",
   };
-  const outputDepositAmount = await depositAmount.execute(inputDepositAmount);
-  const inputWithdrawAmount = {
-    walletId: outputCreateWallet.walletId,
-    amount: 50,
-  };
-  const outputWithdrawAmount = await withdrawAmount.execute(
-    inputWithdrawAmount
+  const outputCreateTransaction = await createTransaction.execute(
+    inputCreateTransaction
   );
-  const inputGetTransaction = {
-    transactionId: outputWithdrawAmount.transactionId,
-  };
-  const outputGetTransaction = await sut.execute(inputGetTransaction);
+  const outputGetTransaction = await sut.execute(outputCreateTransaction);
   expect(outputGetTransaction.transactionId).toBe(
-    outputWithdrawAmount.transactionId
+    outputCreateTransaction.transactionId
   );
-  expect(outputGetTransaction.payerId).toBe(inputWithdrawAmount.walletId);
-  expect(outputGetTransaction.payeeId).toBe(inputWithdrawAmount.walletId);
-  expect(outputGetTransaction.amount).toBe(inputWithdrawAmount.amount);
-  expect(outputGetTransaction.status).toBe("withdraw");
+  expect(outputGetTransaction.payerId).toBe(inputCreateTransaction.payerId);
+  expect(outputGetTransaction.payeeId).toBe(inputCreateTransaction.payeeId);
+  expect(outputGetTransaction.amount).toBe(inputCreateTransaction.amount);
+  expect(outputGetTransaction.status).toBe(inputCreateTransaction.type);
+  expect(outputGetTransaction.occuredAt).toEqual(expect.any(Date));
+});
+
+test("Deve ser possivel obter uma transaction do tipo tranfer", async () => {
+  const inputCreateTransaction = {
+    payerId: crypto.randomUUID(),
+    payeeId: crypto.randomUUID(),
+    amount: 100,
+    type: "transfer",
+  };
+  const outputCreateTransaction = await createTransaction.execute(
+    inputCreateTransaction
+  );
+  const outputGetTransaction = await sut.execute(outputCreateTransaction);
+  expect(outputGetTransaction.transactionId).toBe(
+    outputCreateTransaction.transactionId
+  );
+  expect(outputGetTransaction.payerId).toBe(inputCreateTransaction.payerId);
+  expect(outputGetTransaction.payeeId).toBe(inputCreateTransaction.payeeId);
+  expect(outputGetTransaction.amount).toBe(inputCreateTransaction.amount);
+  expect(outputGetTransaction.status).toBe(inputCreateTransaction.type);
   expect(outputGetTransaction.occuredAt).toEqual(expect.any(Date));
 });

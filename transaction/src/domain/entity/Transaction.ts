@@ -1,14 +1,14 @@
 import {
   TransactionFactory,
-  TransactionStatus,
-} from "../value-object/TransactionStatus";
+  TransactionType,
+} from "../value-object/TransactionType";
 
 export class Transaction {
   readonly transactionId: string;
   readonly payerId: string;
   readonly payeeId: string;
   readonly amount: number;
-  readonly status: TransactionStatus;
+  readonly type: TransactionType;
   readonly occuredAt: Date;
 
   private constructor(
@@ -16,26 +16,26 @@ export class Transaction {
     payerId: string,
     payeeId: string,
     amount: number,
-    status: string,
+    type: string,
     occuredAt: Date
   ) {
     this.transactionId = transactionId;
     this.payerId = payerId;
     this.payeeId = payeeId;
     this.amount = amount;
-    this.status = TransactionFactory.create(status);
+    this.type = TransactionFactory.create(type);
     this.occuredAt = occuredAt;
   }
 
   getStatus() {
-    return this.status.value;
+    return this.type.value;
   }
 
   static create(
     payerId: string,
     payeeId: string,
     amount: number,
-    status: string
+    type: string
   ) {
     const transactionId = crypto.randomUUID();
     const occuredAt = new Date();
@@ -44,7 +44,7 @@ export class Transaction {
       payerId,
       payeeId,
       amount,
-      status,
+      type,
       occuredAt
     );
   }
@@ -54,7 +54,7 @@ export class Transaction {
     payerId: string,
     payeeId: string,
     amount: number,
-    status: string,
+    type: string,
     occuredAt: string
   ) {
     return new Transaction(
@@ -62,7 +62,7 @@ export class Transaction {
       payerId,
       payeeId,
       amount,
-      status,
+      type,
       new Date(occuredAt)
     );
   }
