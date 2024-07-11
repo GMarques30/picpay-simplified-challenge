@@ -3,10 +3,7 @@ import { TransactionGateway } from "../gateway/TransactionGateway";
 import { AccountRepository } from "../repository/AccountRepository";
 
 export class CreateAccount {
-  constructor(
-    readonly accountRepository: AccountRepository,
-    readonly transactionGateway: TransactionGateway
-  ) {}
+  constructor(readonly accountRepository: AccountRepository) {}
 
   async execute({ name, document, email, password }: Input): Promise<Output> {
     const emailAlreadyRegistred = await this.accountRepository.getByEmail(
@@ -23,7 +20,6 @@ export class CreateAccount {
       );
     const account = Account.create(name, email, password, document);
     await this.accountRepository.save(account);
-    await this.transactionGateway.createWallet(account.accountId);
     return {
       accountId: account.accountId,
     };

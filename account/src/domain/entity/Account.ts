@@ -9,8 +9,20 @@ export class Account {
     private _name: Name,
     private _email: Email,
     private _password: Password,
-    private _document: Document
+    private _document: Document,
+    private _balance: number
   ) {}
+
+  deposit(amount: number) {
+    if (amount <= 0) throw new Error("Invalid deposit");
+    this._balance += amount;
+  }
+
+  withdraw(amount: number) {
+    if (amount <= 0) throw new Error("Invalid withdraw");
+    if (this._balance < amount) throw new Error("Insufficient balance");
+    this._balance -= amount;
+  }
 
   getName() {
     return this._name.getValue();
@@ -44,6 +56,10 @@ export class Account {
     this._document = DocumentFactory.create(document);
   }
 
+  getBalance() {
+    return this._balance;
+  }
+
   static create(
     name: string,
     email: string,
@@ -51,12 +67,14 @@ export class Account {
     document: string
   ) {
     const accountId = crypto.randomUUID();
+    const balance = 0;
     return new Account(
       accountId,
       new Name(name),
       new Email(email),
       Password.create(password),
-      DocumentFactory.create(document)
+      DocumentFactory.create(document),
+      balance
     );
   }
 
@@ -65,14 +83,16 @@ export class Account {
     name: string,
     email: string,
     password: string,
-    document: string
+    document: string,
+    balance: number
   ) {
     return new Account(
       accountId,
       new Name(name),
       new Email(email),
       Password.restore(password),
-      DocumentFactory.create(document)
+      DocumentFactory.create(document),
+      balance
     );
   }
 }

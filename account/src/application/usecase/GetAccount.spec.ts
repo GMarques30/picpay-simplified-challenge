@@ -2,24 +2,15 @@ import { AccountRepositoryMemory } from "./../../../test/repository/AccountRepos
 import { AccountRepository } from "../repository/AccountRepository";
 import { CreateAccount } from "./CreateAccount";
 import { GetAccount } from "./GetAccount";
-import { TransactionGateway } from "../gateway/TransactionGateway";
-import { TransactionGatewayHttp } from "../../infra/gateway/TransactionGatewayHttp";
-import { HttpClient, AxiosAdapter } from "../../infra/http/HttpClient";
 
-let httpClient: HttpClient;
-let transactionGateway: TransactionGateway;
 let accountRepository: AccountRepository;
 let createAccount: CreateAccount;
 let sut: GetAccount;
 
 beforeEach(() => {
-  httpClient = new AxiosAdapter();
-  transactionGateway = new TransactionGatewayHttp(httpClient);
   accountRepository = new AccountRepositoryMemory();
-  createAccount = new CreateAccount(accountRepository, transactionGateway);
+  createAccount = new CreateAccount(accountRepository);
   sut = new GetAccount(accountRepository);
-
-  jest.spyOn(httpClient, "post").mockResolvedValue({});
 });
 
 it("should be possible to obtain user data", async () => {
@@ -39,6 +30,7 @@ it("should be possible to obtain user data", async () => {
   expect(outputGetAccount.email).toBe(inputCreateAccount.email);
   expect(outputGetAccount.document).toBe(inputCreateAccount.document);
   expect(outputGetAccount.password).toEqual(expect.any(String));
+  expect(outputGetAccount.balance).toBe(0);
 });
 
 it("should not be possible to get the data of a user who doesn't exist", async () => {

@@ -12,6 +12,13 @@ export class AccountRepositoryMemory implements AccountRepository {
     this.accounts.push(account);
   }
 
+  async update(account: Account): Promise<void> {
+    const index = this.accounts.findIndex(
+      (acc) => acc.accountId === account.accountId
+    );
+    this.accounts[index] = account;
+  }
+
   async getByEmail(email: string): Promise<Account | undefined> {
     return this.accounts.find((account) => account.getEmail() === email);
   }

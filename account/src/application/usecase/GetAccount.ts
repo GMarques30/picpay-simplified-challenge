@@ -12,6 +12,7 @@ export class GetAccount {
       document: account.getDocument(),
       email: account.getEmail(),
       password: account.getPassword(),
+      balance: account.getBalance(),
     };
   }
 }
@@ -26,4 +27,5 @@ type Output = {
   document: string;
   email: string;
   password: string;
+  balance: number;
 };
