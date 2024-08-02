@@ -3,20 +3,29 @@ import { AccountRepository } from "../repository/AccountRepository";
 import { CreateAccount } from "./CreateAccount";
 import { GetAccount } from "./GetAccount";
 import { AccountRepositoryMemory } from "../../../test/repository/AccountRepositoryMemory";
+import { Queue } from "../queue/queue";
 
 let accountRepository: AccountRepository;
 let createAccount: CreateAccount;
 let getAccount: GetAccount;
+let queue: Queue;
 let sut: DepositAmount;
 
 beforeEach(() => {
   accountRepository = new AccountRepositoryMemory();
   createAccount = new CreateAccount(accountRepository);
   getAccount = new GetAccount(accountRepository);
-  sut = new DepositAmount(accountRepository);
+  queue = {
+    connect: jest.fn(),
+    consume: jest.fn(),
+    publish: jest.fn(),
+    close: jest.fn(),
+    setup: jest.fn(),
+  };
+  sut = new DepositAmount(accountRepository, queue);
 });
 
-test("Deve ser possivel depositar um valor na conta de um cliente", async () => {
+it("should be possible to deposit an amount into a customer's account", async () => {
   const inputCreateAccount = {
     name: "John Doe",
     document: "12345678909",
@@ -36,9 +45,17 @@ test("Deve ser possivel depositar um valor na conta de um cliente", async () => 
   await sut.execute(inputDepositAmount);
   const outputGetAccountBefore = await getAccount.execute(inputGetAccount);
   expect(outputGetAccountBefore.balance).toBe(100);
+
+  expect(queue.publish).toHaveBeenCalledWith("depositPlaced", {
+    to: inputCreateAccount.email,
+    payerId: outputCreateAccount.accountId,
+    payeeId: outputCreateAccount.accountId,
+    amount: 100,
+    type: "deposit",
+  });
 });
 
-test("Não deve ser possivel realizar um deposito com um montante invalido", async () => {
+it("should not be possible to make a deposit with an invalid amount", async () => {
   const inputCreateAccount = {
     name: "John Doe",
     document: "12345678909",
@@ -55,7 +72,7 @@ test("Não deve ser possivel realizar um deposito com um montante invalido", asy
   );
 });
 
-test("Não deve ser possivel fazer um deposito em uma conta inexistente", () => {
+it("should not be possible to make a deposit into a non-existent account", () => {
   const input = {
     accountId: crypto.randomUUID(),
     amount: 100,

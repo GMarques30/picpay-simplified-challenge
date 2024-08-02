@@ -1,24 +1,21 @@
+import { DomainEvent } from "../../domain/event/DomainEvent";
+import { Queue } from "../queue/queue";
 import { AccountRepository } from "./../repository/AccountRepository";
 
 export class DepositAmount {
-  constructor(readonly accountRepository: AccountRepository) {}
+  constructor(
+    readonly accountRepository: AccountRepository,
+    readonly queue: Queue
+  ) {}
 
   async execute({ accountId, amount }: Input): Promise<void> {
     const account = await this.accountRepository.getByAccountId(accountId);
     if (!account) throw new Error("Account not found");
+    account.register("depositPlaced", async (event: DomainEvent) => {
+      await this.queue.publish(event.event, event.data);
+    });
     account.deposit(amount);
-    // const transaction = Transaction.create(
-    //   account.accountId,
-    //   account.accountId,
-    //   amount,
-    //   "deposit"
-    // );
-
-    //Envio um evento de dominio chamado deposit completed
     await this.accountRepository.update(account);
-    // return {
-    //   transactionId: transaction.transactionId,
-    // };
   }
 }
 
@@ -26,7 +23,3 @@ type Input = {
   accountId: string;
   amount: number;
 };
-
-// type Output = {
-//   transactionId: string;
-// };

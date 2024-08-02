@@ -13,6 +13,7 @@ export class GetTransaction {
       payerId: transaction.payerId,
       payeeId: transaction.payeeId,
       amount: transaction.amount,
+      type: transaction.getType(),
       status: transaction.getStatus(),
       occuredAt: transaction.occuredAt,
     };
@@ -28,6 +29,7 @@ type Output = {
   payerId: string;
   payeeId: string;
   amount: number;
+  type: string;
   status: string;
   occuredAt: Date;
 };

@@ -4,50 +4,31 @@ import { DepositAmount } from "./DepositAmount";
 import { TransferAmount } from "./TransferAmount";
 import { AccountRepository } from "../repository/AccountRepository";
 import { AccountRepositoryMemory } from "../../../test/repository/AccountRepositoryMemory";
-
-// jest.mock("../../infra/http/HttpClient");
+import { Queue } from "../queue/queue";
 
 let accountRepository: AccountRepository;
 let createAccount: CreateAccount;
 let getAccount: GetAccount;
 let depositAmount: DepositAmount;
+let queue: Queue;
 let sut: TransferAmount;
 
 beforeEach(() => {
-  // httpClient = {
-  //   get: jest.fn(),
-  //   post: jest.fn(),
-  // };
-  // accountGateway = {
-  //   createAccount: jest.fn(),
-  //   getByAccountId: jest.fn(),
-  // };
+  queue = {
+    connect: jest.fn(),
+    consume: jest.fn(),
+    publish: jest.fn(),
+    close: jest.fn(),
+    setup: jest.fn(),
+  };
   accountRepository = new AccountRepositoryMemory();
   createAccount = new CreateAccount(accountRepository);
   getAccount = new GetAccount(accountRepository);
-  depositAmount = new DepositAmount(accountRepository);
-  sut = new TransferAmount(accountRepository);
+  depositAmount = new DepositAmount(accountRepository, queue);
+  sut = new TransferAmount(accountRepository, queue);
 });
 
-test("Deve ser possivel realizar uma transferencia entre dois clientes", async () => {
-  // (httpClient.post as jest.Mock).mockResolvedValue({
-  //   status: "success",
-  //   data: {
-  //     message: "Notification sent",
-  //   },
-  // });
-
-  // (httpClient.get as jest.Mock).mockResolvedValue({
-  //   status: "success",
-  //   data: {
-  //     authorization: true,
-  //   },
-  // });
-
-  // (accountGateway.getByAccountId as jest.Mock).mockResolvedValue({
-  //   document: "12345678909",
-  // });
-
+it("should be possible to make a transfer between two clients", async () => {
   const inputCreateAccount1 = {
     name: "John Doe",
     document: "12345678909",
@@ -73,6 +54,13 @@ test("Deve ser possivel realizar uma transferencia entre dois clientes", async (
     amount: 50,
   };
   await sut.execute(inputTransferAmount);
+  expect(queue.publish).toHaveBeenCalledWith("transferPlaced", {
+    to: inputCreateAccount1.email,
+    payerId: inputTransferAmount.payerId,
+    payeeId: inputTransferAmount.payeeId,
+    amount: inputTransferAmount.amount,
+    type: "transfer",
+  });
   const outputGetAccount1 = await getAccount.execute({
     accountId: outputCreateAccount1.accountId,
   });
@@ -83,25 +71,7 @@ test("Deve ser possivel realizar uma transferencia entre dois clientes", async (
   expect(outputGetAccount2.balance).toBe(50);
 });
 
-test("Deve ser possivel realizar uma transferencia entre um pagador do tipo cliente e um recebedor do tipo lojista", async () => {
-  // (httpClient.post as jest.Mock).mockResolvedValue({
-  //   status: "success",
-  //   data: {
-  //     message: "Notification sent",
-  //   },
-  // });
-
-  // (httpClient.get as jest.Mock).mockResolvedValue({
-  //   status: "success",
-  //   data: {
-  //     authorization: true,
-  //   },
-  // });
-
-  // (accountGateway.getByAccountId as jest.Mock).mockResolvedValue({
-  //   document: "12345678909",
-  // });
-
+it("should be possible to make a transfer between a payer of type customer and a payee of type seller", async () => {
   const inputCreateAccount1 = {
     name: "John Doe",
     document: "12345678909",
@@ -127,6 +97,13 @@ test("Deve ser possivel realizar uma transferencia entre um pagador do tipo clie
     amount: 90,
   };
   await sut.execute(inputTransferAmount);
+  expect(queue.publish).toHaveBeenCalledWith("transferPlaced", {
+    to: inputCreateAccount1.email,
+    payerId: inputTransferAmount.payerId,
+    payeeId: inputTransferAmount.payeeId,
+    amount: inputTransferAmount.amount,
+    type: "transfer",
+  });
   const outputGetAccount1 = await getAccount.execute({
     accountId: outputCreateAccount1.accountId,
   });
@@ -137,11 +114,7 @@ test("Deve ser possivel realizar uma transferencia entre um pagador do tipo clie
   expect(outputGetAccount2.balance).toBe(90);
 });
 
-test("Não deve ser possivel realizar uma transferencia se o pagador for do tipo lojista", async () => {
-  // (accountGateway.getByAccountId as jest.Mock).mockResolvedValue({
-  //   document: "90689024000192",
-  // });
-
+it("should not be possible to make a transfer if the payer is a seller", async () => {
   const inputCreateAccount1 = {
     name: "John Doe",
     document: "90689024000192",

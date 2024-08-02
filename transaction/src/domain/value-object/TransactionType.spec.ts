@@ -1,30 +1,30 @@
 import {
   DepositType,
-  TransactionFactory,
+  TransactionTypeFactory,
   TransferType,
   WithdrawType,
 } from "./TransactionType";
 
-test("Deve ser possivel criar um status do tipo deposit", () => {
-  const output = TransactionFactory.create("deposit");
+test("Deve ser possivel criar um transaction type do tipo deposit", () => {
+  const output = TransactionTypeFactory.create("deposit");
   expect(output).toBeInstanceOf(DepositType);
   expect(output.value).toBe("deposit");
 });
 
-test("Deve ser possivel criar um status do tipo withdraw", () => {
-  const output = TransactionFactory.create("withdraw");
+test("Deve ser possivel criar um transaction type do tipo withdraw", () => {
+  const output = TransactionTypeFactory.create("withdraw");
   expect(output).toBeInstanceOf(WithdrawType);
   expect(output.value).toBe("withdraw");
 });
 
-test("Deve ser possivel criar um status do tipo transfer", () => {
-  const output = TransactionFactory.create("transfer");
+test("Deve ser possivel criar um transaction type do tipo transfer", () => {
+  const output = TransactionTypeFactory.create("transfer");
   expect(output).toBeInstanceOf(TransferType);
   expect(output.value).toBe("transfer");
 });
 
-test("Não deve ser possiver criar um status se ele não existir", () => {
-  expect(async () => TransactionFactory.create("pix")).rejects.toThrow(
-    new Error()
+test("Não deve ser possiver criar um transaction type se ele não existir", () => {
+  expect(async () => TransactionTypeFactory.create("pix")).rejects.toThrow(
+    new Error("Invalid type")
   );
 });

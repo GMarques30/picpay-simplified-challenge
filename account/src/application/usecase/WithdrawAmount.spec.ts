@@ -4,22 +4,31 @@ import { GetAccount } from "./GetAccount";
 import { CreateAccount } from "./CreateAccount";
 import { AccountRepository } from "./../repository/AccountRepository";
 import { AccountRepositoryMemory } from "./../../../test/repository/AccountRepositoryMemory";
+import { Queue } from "../queue/queue";
 
 let accountRepository: AccountRepository;
 let createAccount: CreateAccount;
 let getAccount: GetAccount;
 let depositAmount: DepositAmount;
+let queue: Queue;
 let sut: WithdrawAmount;
 
 beforeEach(() => {
+  queue = {
+    connect: jest.fn(),
+    consume: jest.fn(),
+    publish: jest.fn(),
+    close: jest.fn(),
+    setup: jest.fn(),
+  };
   accountRepository = new AccountRepositoryMemory();
   createAccount = new CreateAccount(accountRepository);
   getAccount = new GetAccount(accountRepository);
-  depositAmount = new DepositAmount(accountRepository);
-  sut = new WithdrawAmount(accountRepository);
+  depositAmount = new DepositAmount(accountRepository, queue);
+  sut = new WithdrawAmount(accountRepository, queue);
 });
 
-test("Deve ser possivel retirar um montante da conta de um cliente", async () => {
+it("should be possible to withdraw an amount from a customers account", async () => {
   const inputCreateAccount = {
     name: "John Doe",
     document: "12345678909",
@@ -44,9 +53,16 @@ test("Deve ser possivel retirar um montante da conta de um cliente", async () =>
   await sut.execute(inputWithdrawAmount);
   const outputGetAccountBefore = await getAccount.execute(inputGetAccount);
   expect(outputGetAccountBefore.balance).toBe(50);
+  expect(queue.publish).toHaveBeenCalledWith("withdrawPlaced", {
+    to: inputCreateAccount.email,
+    payerId: outputCreateAccount.accountId,
+    payeeId: outputCreateAccount.accountId,
+    amount: 50,
+    type: "withdraw",
+  });
 });
 
-test("Não deve ser possivel retirar um montante com saldo insuficiente", async () => {
+it("should not be possible to withdraw an amount with an insufficient balance", async () => {
   const inputCreateAccount = {
     name: "John Doe",
     document: "12345678909",
@@ -68,7 +84,7 @@ test("Não deve ser possivel retirar um montante com saldo insuficiente", async 
   );
 });
 
-test("Não deve ser possivel retirar com um montante invalido", async () => {
+it("should not be possible to withdraw with an invalid amount", async () => {
   const inputCreateAccount = {
     name: "John Doe",
     document: "12345678909",
@@ -90,7 +106,7 @@ test("Não deve ser possivel retirar com um montante invalido", async () => {
   );
 });
 
-test("Não deve ser possivel fazer uma retirada em uma conta inexistente", () => {
+it("should not be possible to withdraw from a non-existent account", () => {
   const input = {
     accountId: crypto.randomUUID(),
     amount: 100,

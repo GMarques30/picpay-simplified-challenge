@@ -19,9 +19,7 @@ class CPF implements Document {
   }
 
   private validate(rawCpf: string) {
-    if (!rawCpf) return false;
     const cpf = this.removeNonDigits(rawCpf);
-    if (cpf.length !== this.CPF_LENGTH) return false;
     if (this.allDigitsTheSame(cpf)) return false;
     const digit1 = this.calculateDigit(cpf, this.FACTOR_FIRST_DIGIT);
     const digit2 = this.calculateDigit(cpf, this.FACTOR_SECOND_DIGIT);
@@ -67,9 +65,7 @@ class CNPJ implements Document {
   }
 
   private validate(rawCnpj: string) {
-    if (!rawCnpj) return false;
     const cnpj = this.removeNonDigits(rawCnpj);
-    if (cnpj.length !== this.CNPJ_LENGTH) return false;
     if (this.allDigitsTheSame(cnpj)) return false;
 
     const digits = cnpj.substring(0, 12);

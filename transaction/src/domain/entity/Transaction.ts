@@ -1,34 +1,47 @@
 import {
-  TransactionFactory,
+  TransactionStatus,
+  TransactionStatusFactory,
+} from "../value-object/TransactionStatus";
+import {
   TransactionType,
+  TransactionTypeFactory,
 } from "../value-object/TransactionType";
 
 export class Transaction {
-  readonly transactionId: string;
-  readonly payerId: string;
-  readonly payeeId: string;
-  readonly amount: number;
   readonly type: TransactionType;
-  readonly occuredAt: Date;
+  status: TransactionStatus;
 
   private constructor(
-    transactionId: string,
-    payerId: string,
-    payeeId: string,
-    amount: number,
+    readonly transactionId: string,
+    readonly payerId: string,
+    readonly payeeId: string,
+    readonly amount: number,
     type: string,
-    occuredAt: Date
+    readonly occuredAt: Date
   ) {
     this.transactionId = transactionId;
     this.payerId = payerId;
     this.payeeId = payeeId;
     this.amount = amount;
-    this.type = TransactionFactory.create(type);
+    this.type = TransactionTypeFactory.create(type);
+    this.status = TransactionStatusFactory.create(this, "pending");
     this.occuredAt = occuredAt;
   }
 
-  getStatus() {
+  approve() {
+    this.status.approve();
+  }
+
+  reject() {
+    this.status.reject();
+  }
+
+  getType() {
     return this.type.value;
+  }
+
+  getStatus() {
+    return this.status.value;
   }
 
   static create(
@@ -46,24 +59,6 @@ export class Transaction {
       amount,
       type,
       occuredAt
-    );
-  }
-
-  static restore(
-    transactionId: string,
-    payerId: string,
-    payeeId: string,
-    amount: number,
-    type: string,
-    occuredAt: string
-  ) {
-    return new Transaction(
-      transactionId,
-      payerId,
-      payeeId,
-      amount,
-      type,
-      new Date(occuredAt)
     );
   }
 }

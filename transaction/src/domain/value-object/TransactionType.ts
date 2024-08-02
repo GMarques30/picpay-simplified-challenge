@@ -29,11 +29,11 @@ export class TransferType extends TransactionType {
   }
 }
 
-export class TransactionFactory {
+export class TransactionTypeFactory {
   static create(status: string) {
     if (status === "deposit") return new DepositType();
     if (status === "withdraw") return new WithdrawType();
     if (status === "transfer") return new TransferType();
-    throw new Error();
+    throw new Error("Invalid type");
   }
 }

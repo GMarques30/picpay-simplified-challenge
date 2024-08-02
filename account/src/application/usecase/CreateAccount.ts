@@ -1,5 +1,4 @@
 import { Account } from "../../domain/entity/Account";
-import { TransactionGateway } from "../gateway/TransactionGateway";
 import { AccountRepository } from "../repository/AccountRepository";
 
 export class CreateAccount {
