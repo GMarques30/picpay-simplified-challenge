@@ -17,15 +17,11 @@ export class Transaction {
     readonly payeeId: string,
     readonly amount: number,
     type: string,
+    status: string,
     readonly occuredAt: Date
   ) {
-    this.transactionId = transactionId;
-    this.payerId = payerId;
-    this.payeeId = payeeId;
-    this.amount = amount;
     this.type = TransactionTypeFactory.create(type);
-    this.status = TransactionStatusFactory.create(this, "pending");
-    this.occuredAt = occuredAt;
+    this.status = TransactionStatusFactory.create(this, status);
   }
 
   approve() {
@@ -51,6 +47,7 @@ export class Transaction {
     type: string
   ) {
     const transactionId = crypto.randomUUID();
+    const status = "pending";
     const occuredAt = new Date();
     return new Transaction(
       transactionId,
@@ -58,7 +55,28 @@ export class Transaction {
       payeeId,
       amount,
       type,
+      status,
       occuredAt
+    );
+  }
+
+  static restore(
+    transactionId: string,
+    payerId: string,
+    payeeId: string,
+    amount: number,
+    type: string,
+    status: string,
+    occuredAt: Date
+  ) {
+    return new Transaction(
+      transactionId,
+      payerId,
+      payeeId,
+      amount,
+      type,
+      status,
+      new Date(occuredAt)
     );
   }
 }

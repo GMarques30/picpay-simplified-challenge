@@ -1,4 +1,4 @@
-import { UndoTransfer } from "../../domain/service/UndoTransfer";
+import { Transfer } from "../../domain/service/Transfer";
 import { AccountRepository } from "../repository/AccountRepository";
 
 export class CancelTransfer {
@@ -8,7 +8,7 @@ export class CancelTransfer {
     const payerAccount = await this.accountRepository.getByAccountId(payerId);
     const payeeAccount = await this.accountRepository.getByAccountId(payeeId);
     if (!payerAccount || !payeeAccount) throw new Error("Account not found");
-    UndoTransfer.transfer(payerAccount, payeeAccount, amount);
+    new Transfer(payerAccount, payeeAccount, amount).undo();
     await this.accountRepository.update(payerAccount);
     await this.accountRepository.update(payeeAccount);
   }

@@ -84,4 +84,22 @@ export class Account extends Observable {
       balance
     );
   }
+
+  static restore(
+    accountId: string,
+    name: string,
+    email: string,
+    password: string,
+    document: string,
+    balance: number
+  ) {
+    return new Account(
+      accountId,
+      new Name(name),
+      new Email(email),
+      Password.restore(password),
+      DocumentFactory.create(document),
+      balance
+    );
+  }
 }

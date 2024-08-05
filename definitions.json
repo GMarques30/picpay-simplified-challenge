@@ -78,5 +78,55 @@
       "durable": true,
       "auto_delete": false
     }
+  ],
+  "bindings": [
+    {
+      "source": "withdrawPlaced",
+      "vhost": "/",
+      "destination": "withdrawPlaced.processTransaction",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "transactionRejected",
+      "vhost": "/",
+      "destination": "transactionRejected.cancelTransaction",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "depositPlaced",
+      "vhost": "/",
+      "destination": "depositPlaced.processTransaction",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "transactionApproved",
+      "vhost": "/",
+      "destination": "transactionApproved.sendNotification",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "transferPlaced",
+      "vhost": "/",
+      "destination": "transferPlaced.processTransaction",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "transactionRejected",
+      "vhost": "/",
+      "destination": "transactionRejected.sendNotification",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    }
   ]
 }

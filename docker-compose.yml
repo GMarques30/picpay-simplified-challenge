@@ -2,6 +2,7 @@ version: "3.9"
 
 services:
   api_account:
+    container_name: api-account
     build:
       context: ./account
     ports:
@@ -16,6 +17,7 @@ services:
 
   postgres_account:
     image: postgres:14.3-alpine
+    container_name: postgre-account
     environment:
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: app
@@ -27,6 +29,7 @@ services:
       - ./account/create.sql:/docker-entrypoint-initdb.d/init.sql
 
   api_transaction:
+    container_name: api-transaction
     build:
       context: ./transaction
     ports:
@@ -41,6 +44,7 @@ services:
 
   postgres_transaction:
     image: postgres:14.3-alpine
+    container_name: postgre-transaction
     environment:
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: app
@@ -52,6 +56,7 @@ services:
       - ./transaction/create.sql:/docker-entrypoint-initdb.d/init.sql
 
   api_notification:
+    container_name: api-notification
     build:
       context: ./notification
     ports:
