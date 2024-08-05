@@ -35,7 +35,7 @@ O desafio pode ser encontrado [neste link](https://github.com/PicPay/picpay-desa
 
 - Consultar um mock de serviço autorizador externo antes de finalizar uma transferência: `GET` [https://util.devi.tools/api/v2/authorize](https://util.devi.tools/api/v2/authorize).
 
-### Serviço de envio de notificação
+### Serviço notificador
 
 - Usar um mock de serviço de notificação externo para simular o envio de notificações para o usuário ou lojista: `POST` [https://util.devi.tools/api/v1/notify](https://util.devi.tools/api/v1/notify).
 
@@ -79,19 +79,19 @@ A partir do diagrama de classes abaixo, é possível entender melhor a estrutura
 
 1. Clone o repositório do git:
 
-```text
+```typescript
 git clone https://github.com/GMarques30/picpay-simplified-challenge.git
 ```
 
 2. Instale as dependências:
 
-```text
-yarn
+```typescript
+yarn;
 ```
 
 3. Execute a aplicação:
 
-```text
+```typescript
 docker-compose up --build -d
 ```
 
