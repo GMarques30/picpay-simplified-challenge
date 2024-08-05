@@ -1,5 +1,5 @@
 import { GetTransaction } from "../../application/usecase/GetTransaction";
-import { HttpServer } from "./../../../../account/src/infra/http/HttpServer";
+import { HttpServer } from "./HttpServer";
 
 export class TransactionController {
   constructor(

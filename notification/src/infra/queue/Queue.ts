@@ -7,7 +7,7 @@ export class RabbitMQAdapter implements Queue {
   private channel!: Channel;
 
   async connect(): Promise<void> {
-    this.connection = await amqp.connect("amqp://localhost");
+    this.connection = await amqp.connect("amqp://rabbitmq");
     this.channel = await this.connection.createChannel();
   }
 
@@ -26,10 +26,7 @@ export class RabbitMQAdapter implements Queue {
         await callback(input);
         this.channel.ack(message);
       } catch (err: any) {
-        console.error(
-          err instanceof AxiosError ? err.response?.data.message : err.message
-        );
-        this.channel.nack(message, false, true);
+        this.channel.nack(message);
       }
     });
   }

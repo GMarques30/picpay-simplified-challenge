@@ -7,39 +7,37 @@
 </h3>
 
 <p align="center">
-  <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-%2304D361">
-  <img alt="Language: Node" src="https://img.shields.io/badge/language-node-green">
-  <img alt="Language: Typescript" src="https://img.shields.io/badge/language-typescript-blue">
-  <img alt="Version: 1.0" src="https://img.shields.io/badge/version-1.0-yellowgreen">
+  <img alt="Language: Node" src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white">
+  <img alt="Language: Typescript" src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white">
 </p>
 
-Essa é a minha proposta de solução para o desafio da entrevista para vaga de desenvolvedor do Picpay.
+Esta é a minha proposta de solução para o desafio da entrevista para a vaga de desenvolvedor no PicPay.
 
 O desafio pode ser encontrado [neste link](https://github.com/PicPay/picpay-desafio-backend/tree/main).
 
 ### Usuários
 
 - Existem dois tipos de usuários: comuns e lojistas.
-- Usuário deve ter o seguites campos **nome completo**, **CPF** ou **CNPJ**, **email**, **senha** para ambos tipos de usuários.
+- Usuário deve ter o seguites campos: **nome completo**, **CPF/CNPJ**, **email**, **senha** para ambos os tipos de usuários.
 - Os campos **CPF/CNPJ** e **email** devem ser únicos.
 
 ### Transferência de dinheiro
 
-- Usuários do tipo comum podem enviar dinheiro para outros usuários comouns e lojistas.
+- Usuários do tipo comum podem enviar dinheiro para outros usuários comuns e lojistas.
 - Lojistas apenas recebem transferências e não podem enviar dinheiro.
 - É necessário validar o saldo do usuário antes da transferência.
 
 ### Transações
 
-- As transferências devem ser tratadas como transações, revertendo-as em qualquer caso de inconsistência.
+- As transferências devem ser tratadas como transações, revertendo-as em caso de qualquer inconsistência.
 
 ### Serviço autorizador
 
-- Consultar um mock de serviço autorizador externo antes de finalizar uma transferência `GET` [https://util.devi.tools/api/v2/authorize](https://util.devi.tools/api/v2/authorize).
+- Consultar um mock de serviço autorizador externo antes de finalizar uma transferência: `GET` [https://util.devi.tools/api/v2/authorize](https://util.devi.tools/api/v2/authorize).
 
 ### Serviço de envio de notificação
 
-- Usar um mock de serviço de notificação externo para simular o envio de notificações para o usuário ou lojista `POST` [https://util.devi.tools/api/v1/notify](https://util.devi.tools/api/v1/notify).
+- Usar um mock de serviço de notificação externo para simular o envio de notificações para o usuário ou lojista: `POST` [https://util.devi.tools/api/v1/notify](https://util.devi.tools/api/v1/notify).
 
 ### RESTFul
 
@@ -47,15 +45,15 @@ O desafio pode ser encontrado [neste link](https://github.com/PicPay/picpay-desa
 
 ## Solução
 
-Foi escolhido a utilização de Nodejs juntamente com Typescript para o desenvolvimento do desafio.
+Foi escolhida a utilização de Node.js juntamente com TypeScript para o desenvolvimento do desafio.
 
-A aplicação conta com a utilização dos seguintes conceitos:
+A aplicação faz uso dos seguintes conceitos:
 
 - Arquitetura Limpa
 - Arquitetura Hexagonal
 - Arquitetura Orientada a Eventos
 - Microserviços
-- Domain Driven Design
+- Domain-Driven Design
 - SOLID
 - Design Patterns
 - Gateway Pattern
@@ -65,6 +63,7 @@ A aplicação conta com a utilização dos seguintes conceitos:
 
 - Nodejs
 - Typescript
+- Express
 - PostgreSQL
 - Jest
 - RabbitMQ
@@ -72,7 +71,7 @@ A aplicação conta com a utilização dos seguintes conceitos:
 
 ## Arquitetura
 
-A partir desse diagrama de classe, é possível entender melhor sobre a estrutura da aplicação.
+A partir do diagrama de classes abaixo, é possível entender melhor a estrutura da aplicação.
 
 ![Diagrama de classe](resources/diagrama-de-classe.png)
 
@@ -87,13 +86,13 @@ git clone https://github.com/GMarques30/picpay-simplified-challenge.git
 2. Instale as dependências:
 
 ```text
-yarn install
+yarn
 ```
 
 3. Execute a aplicação:
 
 ```text
-docker-compose up -d
+docker-compose up --build -d
 ```
 
 ## Endpoints

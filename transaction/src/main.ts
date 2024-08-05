@@ -13,18 +13,18 @@ import { QueueController } from "./infra/queue/QueueController";
   const httpServer = new ExpressAdapter();
   const queue = new RabbitMQAdapter();
   await queue.connect();
-  await queue.setup(
-    "transactionApproved",
-    "transactionApproved.sendNotification"
-  );
-  await queue.setup(
-    "transactionRejected",
-    "transactionRejected.sendNotification"
-  );
-  await queue.setup(
-    "transactionRejected",
-    "transactionRejected.cancelTransaction"
-  );
+  // await queue.setup(
+  //   "transactionApproved",
+  //   "transactionApproved.sendNotification"
+  // );
+  // await queue.setup(
+  //   "transactionRejected",
+  //   "transactionRejected.sendNotification"
+  // );
+  // await queue.setup(
+  //   "transactionRejected",
+  //   "transactionRejected.cancelTransaction"
+  // );
   const transactionRepository = new TransactionRepositoryMemory();
   const authorizeGateway = new AuthorizeGatewayHttp(httpClient);
   const getTransaction = new GetTransaction(transactionRepository);

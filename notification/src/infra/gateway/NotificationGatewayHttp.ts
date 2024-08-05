@@ -1,8 +1,8 @@
-import { HttpClient } from "../../../../transaction/src/infra/http/HttpClient";
 import {
   Input,
   NotificationGateway,
 } from "../../application/gateway/NotificationGateway";
+import { HttpClient } from "../http/HttpClient";
 
 export class NotificationGatewayHttp implements NotificationGateway {
   constructor(readonly httpClient: HttpClient) {}

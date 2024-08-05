@@ -1,11 +1,84 @@
-version: "3"
+version: "3.9"
+
 services:
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
+  api_account:
+    build:
+      context: ./account
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "3000:3000"
+    depends_on:
+      postgres_transaction:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - picpay_backend-network
+
+  postgres_account:
+    image: postgres:14.3-alpine
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: app
+    ports:
+      - "5432:5432"
+    networks:
+      - picpay_backend-network
+    volumes:
+      - ./account/create.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api_transaction:
+    build:
+      context: ./transaction
+    ports:
+      - "3001:3000"
+    depends_on:
+      postgres_transaction:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - picpay_backend-network
+
+  postgres_transaction:
+    image: postgres:14.3-alpine
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: app
+    ports:
+      - "5433:5432"
+    networks:
+      - picpay_backend-network
+    volumes:
+      - ./transaction/create.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api_notification:
+    build:
+      context: ./notification
+    ports:
+      - "3002:3000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - picpay_backend-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - picpay_backend-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  picpay_backend-network:
+    driver: bridge

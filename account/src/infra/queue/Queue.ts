@@ -6,7 +6,7 @@ export class RabbitMQAdapter implements Queue {
   private channel!: Channel;
 
   async connect(): Promise<void> {
-    this.connection = await amqp.connect("amqp://localhost");
+    this.connection = await amqp.connect("amqp://rabbitmq");
     this.channel = await this.connection.createChannel();
   }
 

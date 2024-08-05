@@ -8,26 +8,23 @@ export class QueueController {
   ) {
     queue.consume(
       "transactionApproved.sendNotification",
-      async (input: {
-        to: string;
-        transactionType: string;
-        transactionStatus: string;
-        amount: number;
-      }) => {
+      async (input: Input) => {
         await sendNotification.execute(input);
       }
     );
 
     queue.consume(
       "transactionRejected.sendNotification",
-      async (input: {
-        to: string;
-        transactionType: string;
-        transactionStatus: string;
-        amount: number;
-      }) => {
+      async (input: Input) => {
         await sendNotification.execute(input);
       }
     );
   }
 }
+
+type Input = {
+  to: string;
+  transactionType: string;
+  transactionStatus: string;
+  amount: number;
+};

@@ -12,12 +12,7 @@ export class QueueController {
   ) {
     queue.consume(
       "transactionRejected.cancelTransaction",
-      async (input: {
-        payerId: string;
-        payeeId: string;
-        transactionType: string;
-        amount: number;
-      }) => {
+      async (input: Input) => {
         if (input.transactionType === "deposit") {
           await this.cancelDeposit.execute(input);
         }
@@ -31,3 +26,10 @@ export class QueueController {
     );
   }
 }
+
+type Input = {
+  payerId: string;
+  payeeId: string;
+  transactionType: string;
+  amount: number;
+};
