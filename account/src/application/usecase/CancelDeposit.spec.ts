@@ -1,5 +1,5 @@
 import { AccountRepositoryMemory } from "../../../test/repository/AccountRepositoryMemory";
-import { Queue } from "../queue/queue";
+import { Queue } from "../queue/Queue";
 import { AccountRepository } from "../repository/AccountRepository";
 import { CancelDeposit } from "./CancelDeposit";
 import { CreateAccount } from "./CreateAccount";
@@ -19,7 +19,6 @@ beforeEach(() => {
     consume: jest.fn(),
     publish: jest.fn(),
     close: jest.fn(),
-    setup: jest.fn(),
   };
   accountRepository = new AccountRepositoryMemory();
   getAccount = new GetAccount(accountRepository);
@@ -28,7 +27,7 @@ beforeEach(() => {
   sut = new CancelDeposit(accountRepository);
 });
 
-test("Deve ser possivel cancelar um deposito", async () => {
+it("should be possible to cancel a deposit", async () => {
   const inputCreateAccount = {
     name: "John Doe",
     document: "12345678909",
@@ -54,7 +53,7 @@ test("Deve ser possivel cancelar um deposito", async () => {
   expect(outputGetAccountBefore.balance).toBe(0);
 });
 
-test("Não deve ser possivel cancelar o deposito de uma conta inexistente", async () => {
+it("should not be possible to cancel a deposit from a non-existent account", async () => {
   expect(
     async () =>
       await sut.execute({

@@ -1,13 +1,10 @@
 import { NotificationGatewayHttp } from "../../infra/gateway/NotificationGatewayHttp";
 import { HttpClient } from "../../infra/http/HttpClient";
-import { RetryImpl } from "../../infra/retry/RetryImpl";
 import { NotificationGateway } from "../gateway/NotificationGateway";
-import { Retry } from "../retry/Retry";
 import { SendNotification } from "./SendNotification";
 
 let httpClient: HttpClient;
 let notificationGateway: NotificationGateway;
-let retryImpl: Retry;
 let sut: SendNotification;
 
 beforeEach(() => {
@@ -16,11 +13,10 @@ beforeEach(() => {
     post: jest.fn(),
   };
   notificationGateway = new NotificationGatewayHttp(httpClient);
-  retryImpl = new RetryImpl(3, 100);
-  sut = new SendNotification(notificationGateway, retryImpl);
+  sut = new SendNotification(notificationGateway);
 });
 
-test("Deve ser possível enviar uma notificação de uma transação aprovada", async () => {
+it("should be possible to send a notification of an approved transaction", async () => {
   (httpClient.post as jest.Mock).mockResolvedValue({
     status: "success",
     data: {
@@ -37,7 +33,7 @@ test("Deve ser possível enviar uma notificação de uma transação aprovada", 
   expect(httpClient.post).toHaveBeenCalledTimes(1);
 });
 
-test("Deve ser possível enviar uma notificação de uma transação rejeitada", async () => {
+it("should be possible to send a notification of a rejected transaction", async () => {
   (httpClient.post as jest.Mock).mockResolvedValue({
     status: "success",
     data: {
@@ -54,7 +50,7 @@ test("Deve ser possível enviar uma notificação de uma transação rejeitada",
   expect(httpClient.post).toHaveBeenCalledTimes(1);
 });
 
-test("Não deve ser possível enviar uma notificação se o serviço falhar", async () => {
+it("should not be possible to send a notification if the service fails", async () => {
   (httpClient.post as jest.Mock).mockResolvedValue({
     status: "fail",
     data: {

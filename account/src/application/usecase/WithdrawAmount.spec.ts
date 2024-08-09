@@ -4,7 +4,7 @@ import { GetAccount } from "./GetAccount";
 import { CreateAccount } from "./CreateAccount";
 import { AccountRepository } from "./../repository/AccountRepository";
 import { AccountRepositoryMemory } from "./../../../test/repository/AccountRepositoryMemory";
-import { Queue } from "../queue/queue";
+import { Queue } from "../queue/Queue";
 
 let accountRepository: AccountRepository;
 let createAccount: CreateAccount;
@@ -19,7 +19,6 @@ beforeEach(() => {
     consume: jest.fn(),
     publish: jest.fn(),
     close: jest.fn(),
-    setup: jest.fn(),
   };
   accountRepository = new AccountRepositoryMemory();
   createAccount = new CreateAccount(accountRepository);

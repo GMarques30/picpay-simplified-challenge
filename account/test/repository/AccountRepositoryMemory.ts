@@ -1,7 +1,12 @@
+import {
+  DatabaseConnection,
+  InMemoryAdapter,
+} from "./../../src/infra/database/DatabaseConnection";
 import { AccountRepository } from "../../src/application/repository/AccountRepository";
 import { Account } from "../../src/domain/entity/Account";
 
 export class AccountRepositoryMemory implements AccountRepository {
+  readonly connection: DatabaseConnection;
   readonly accounts: {
     id: string;
     name: string;
@@ -13,6 +18,7 @@ export class AccountRepositoryMemory implements AccountRepository {
 
   constructor() {
     this.accounts = [];
+    this.connection = new InMemoryAdapter();
   }
 
   private toPersistence(account: Account) {

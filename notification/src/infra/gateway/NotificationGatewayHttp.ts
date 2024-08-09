@@ -17,7 +17,7 @@ export class NotificationGatewayHttp implements NotificationGateway {
     if (transactionStatus === "rejected") {
       text = `Hello, your ${transactionType} has been rejected.`;
     }
-    await this.httpClient.post("https://util.devi.tools/api/v1/notify", {
+    await this.httpClient.post(process.env.NOTIFY_API_URL!, {
       from: "example@example.com",
       to,
       subject: `${transactionType} made notification`,

@@ -2,7 +2,7 @@ import { TransactionRepositoryMemory } from "../../../test/repository/Transactio
 import { AuthorizeGatewayHttp } from "../../infra/gateway/AuthorizeGatewayHttp";
 import { HttpClient } from "../../infra/http/HttpClient";
 import { AuthorizeGateway } from "../gateway/AuthorizeGateway";
-import { Queue } from "../queue/queue";
+import { Queue } from "../queue/Queue";
 import { TransactionRepository } from "../repository/TransactionRepository";
 import { GetTransaction } from "./GetTransaction";
 import { ProcessTransaction } from "./ProcessTransaction";
@@ -24,7 +24,6 @@ beforeEach(async () => {
     consume: jest.fn(),
     publish: jest.fn(),
     close: jest.fn(),
-    setup: jest.fn(),
   };
   authorizeGateway = new AuthorizeGatewayHttp(httpClient);
   transactionRepository = new TransactionRepositoryMemory();
@@ -36,7 +35,7 @@ beforeEach(async () => {
   sut = new GetTransaction(transactionRepository);
 });
 
-test("Deve ser possivel obter uma transaction do tipo deposit", async () => {
+it("should be possible to obtain a transaction of the deposit type", async () => {
   (httpClient.get as jest.Mock).mockResolvedValue({
     status: "success",
     data: {
@@ -66,7 +65,7 @@ test("Deve ser possivel obter uma transaction do tipo deposit", async () => {
   expect(outputGetTransaction.occuredAt).toEqual(expect.any(Date));
 });
 
-test("Deve ser possivel obter uma transaction do tipo withdraw", async () => {
+it("should be possible to obtain a withdraw transaction", async () => {
   (httpClient.get as jest.Mock).mockResolvedValue({
     status: "success",
     data: {
@@ -96,7 +95,7 @@ test("Deve ser possivel obter uma transaction do tipo withdraw", async () => {
   expect(outputGetTransaction.occuredAt).toEqual(expect.any(Date));
 });
 
-test("Deve ser possivel obter uma transaction do tipo tranfer", async () => {
+it("should be possible to obtain a transaction of type tranfer", async () => {
   (httpClient.get as jest.Mock).mockResolvedValue({
     status: "success",
     data: {
@@ -125,7 +124,7 @@ test("Deve ser possivel obter uma transaction do tipo tranfer", async () => {
   expect(outputGetTransaction.occuredAt).toEqual(expect.any(Date));
 });
 
-test("Não deve ser possivel obter uma transaction inexistente", async () => {
+it("should not be possible to get a non-existent transaction", async () => {
   expect(
     async () =>
       await sut.execute({

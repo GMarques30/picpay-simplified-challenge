@@ -2,7 +2,7 @@ import { Transaction } from "../../domain/entity/Transaction";
 import { TransactionApproved } from "../../domain/event/TransactionApproved";
 import { TransactionRejected } from "../../domain/event/TransactionRejected";
 import { AuthorizeGateway } from "../gateway/AuthorizeGateway";
-import { Queue } from "../queue/queue";
+import { Queue } from "../queue/Queue";
 import { TransactionRepository } from "../repository/TransactionRepository";
 
 export class ProcessTransaction {

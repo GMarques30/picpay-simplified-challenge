@@ -2,9 +2,9 @@ import { SendNotification } from "./application/usecase/SendNotification";
 import { NotificationGatewayHttp } from "./infra/gateway/NotificationGatewayHttp";
 import { AxiosAdapter } from "./infra/http/HttpClient";
 import { ExpressAdapter } from "./infra/http/HttpServer";
-import { RabbitMQAdapter } from "./infra/queue/Queue";
+import { RabbitMQAdapter } from "./infra/queue/RabbitMQAdapter";
 import { QueueController } from "./infra/queue/QueueController";
-import { RetryImpl } from "./infra/retry/RetryImpl";
+import "dotenv/config";
 
 (async () => {
   const httpClient = new AxiosAdapter();
@@ -12,8 +12,7 @@ import { RetryImpl } from "./infra/retry/RetryImpl";
   const queue = new RabbitMQAdapter();
   await queue.connect();
   const notificationGateway = new NotificationGatewayHttp(httpClient);
-  const retry = new RetryImpl(3, 1000);
-  const sendNotification = new SendNotification(notificationGateway, retry);
+  const sendNotification = new SendNotification(notificationGateway);
   new QueueController(queue, sendNotification);
-  httpServer.listen(3002);
+  httpServer.listen(Number(process.env.PORT));
 })();

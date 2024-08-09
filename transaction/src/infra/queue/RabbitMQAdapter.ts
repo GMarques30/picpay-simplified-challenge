@@ -1,23 +1,17 @@
-import { Queue } from "../../application/queue/queue";
-import amqp, { Connection, Channel } from "amqplib";
+import { Queue } from "../../application/queue/Queue";
+import amqp, { Channel, Connection } from "amqplib";
 
 export class RabbitMQAdapter implements Queue {
   private connection!: Connection;
   private channel!: Channel;
 
   async connect(): Promise<void> {
-    this.connection = await amqp.connect("amqp://rabbitmq");
+    this.connection = await amqp.connect(process.env.RABBITMQ_URL!);
     this.channel = await this.connection.createChannel();
   }
 
   async close(): Promise<void> {
     this.connection.close();
-  }
-
-  async setup(exchange: string, queue: string): Promise<void> {
-    await this.channel.assertExchange(exchange, "direct", { durable: true });
-    await this.channel.assertQueue(queue, { durable: true });
-    await this.channel.bindQueue(queue, exchange, "");
   }
 
   async publish(exchange: string, data: any): Promise<void> {

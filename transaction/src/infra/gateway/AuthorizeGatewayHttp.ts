@@ -11,7 +11,7 @@ export class AuthorizeGatewayHttp implements AuthorizeGateway {
     let status = "rejected";
     try {
       const response = await this.httpClient.get(
-        "https://util.devi.tools/api/v2/authorize"
+        process.env.AUTHORIZE_API_URL!
       );
       if (response.data.authorization) {
         status = "approved";

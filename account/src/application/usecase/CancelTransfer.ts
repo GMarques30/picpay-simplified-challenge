@@ -11,6 +11,7 @@ export class CancelTransfer {
     new Transfer(payerAccount, payeeAccount, amount).undo();
     await this.accountRepository.update(payerAccount);
     await this.accountRepository.update(payeeAccount);
+    await this.accountRepository.connection.commit();
   }
 }
 

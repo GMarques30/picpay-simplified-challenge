@@ -1,5 +1,5 @@
 import { DomainEvent } from "../../domain/event/DomainEvent";
-import { Queue } from "../queue/queue";
+import { Queue } from "../queue/Queue";
 import { AccountRepository } from "./../repository/AccountRepository";
 
 export class DepositAmount {

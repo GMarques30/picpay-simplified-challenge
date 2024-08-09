@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 export interface HttpClient {
   get(url: string): Promise<any>;
@@ -6,12 +6,12 @@ export interface HttpClient {
 }
 
 export class AxiosAdapter implements HttpClient {
-  async get(url: string): Promise<AxiosResponse> {
+  async get(url: string): Promise<any> {
     const response = await axios.get(url);
     return response.data;
   }
 
-  async post(url: string, body: any): Promise<AxiosResponse> {
+  async post(url: string, body: any): Promise<any> {
     const response = await axios.post(url, body);
     return response.data;
   }

@@ -6,12 +6,14 @@ services:
     build:
       context: ./account
     ports:
-      - "3000:3000"
+      - 3000:3000
     depends_on:
       postgres_transaction:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+    env_file:
+      - ./account/.env
     networks:
       - picpay_backend-network
 
@@ -22,7 +24,7 @@ services:
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: app
     ports:
-      - "5432:5432"
+      - 5432:5432
     networks:
       - picpay_backend-network
     volumes:
@@ -33,12 +35,14 @@ services:
     build:
       context: ./transaction
     ports:
-      - "3001:3000"
+      - 3001:3000
     depends_on:
       postgres_transaction:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+    env_file:
+      - ./transaction/.env
     networks:
       - picpay_backend-network
 
@@ -49,7 +53,7 @@ services:
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: app
     ports:
-      - "5433:5432"
+      - 5433:5432
     networks:
       - picpay_backend-network
     volumes:
@@ -60,10 +64,12 @@ services:
     build:
       context: ./notification
     ports:
-      - "3002:3000"
+      - 3002:3000
     depends_on:
       rabbitmq:
         condition: service_healthy
+    env_file:
+      - ./notification/.env
     networks:
       - picpay_backend-network
 

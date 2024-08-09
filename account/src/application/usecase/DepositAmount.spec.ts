@@ -3,7 +3,7 @@ import { AccountRepository } from "../repository/AccountRepository";
 import { CreateAccount } from "./CreateAccount";
 import { GetAccount } from "./GetAccount";
 import { AccountRepositoryMemory } from "../../../test/repository/AccountRepositoryMemory";
-import { Queue } from "../queue/queue";
+import { Queue } from "../queue/Queue";
 
 let accountRepository: AccountRepository;
 let createAccount: CreateAccount;
@@ -20,7 +20,6 @@ beforeEach(() => {
     consume: jest.fn(),
     publish: jest.fn(),
     close: jest.fn(),
-    setup: jest.fn(),
   };
   sut = new DepositAmount(accountRepository, queue);
 });

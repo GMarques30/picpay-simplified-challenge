@@ -1,7 +1,7 @@
 import { AccountRepository } from "./../repository/AccountRepository";
-import { Queue } from "../queue/queue";
-import { TransferPlaced } from "../../domain/event/TransferPlaced";
+import { Queue } from "../queue/Queue";
 import { Transfer } from "../../domain/service/Transfer";
+import { DomainEvent } from "../../domain/event/DomainEvent";
 
 export class TransferAmount {
   constructor(
@@ -16,17 +16,14 @@ export class TransferAmount {
     const CPF_LENGTH = 11;
     if (payerAccount.getDocument().length !== CPF_LENGTH)
       throw new Error("Sellers cannot make transfers");
-    new Transfer(payerAccount, payeeAccount, amount).execute();
-    const eventData = new TransferPlaced({
-      to: payerAccount.getEmail(),
-      payerId,
-      payeeId,
-      amount,
-      type: "transfer",
+    const transfer = new Transfer(payerAccount, payeeAccount, amount);
+    transfer.register("transferPlaced", async (event: DomainEvent) => {
+      await this.queue.publish(event.event, event.data);
     });
-    await this.queue.publish("transferPlaced", eventData.data);
+    transfer.execute();
     await this.accountRepository.update(payerAccount);
     await this.accountRepository.update(payeeAccount);
+    await this.accountRepository.connection.commit();
   }
 }
 

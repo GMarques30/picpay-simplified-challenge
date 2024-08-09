@@ -1,4 +1,4 @@
-import { Queue } from "../../application/queue/queue";
+import { Queue } from "../../application/queue/Queue";
 import { CancelDeposit } from "../../application/usecase/CancelDeposit";
 import { CancelTransfer } from "../../application/usecase/CancelTransfer";
 import { CancelWithdraw } from "../../application/usecase/CancelWithdraw";

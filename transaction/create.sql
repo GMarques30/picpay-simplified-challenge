@@ -1,3 +1,5 @@
+drop schema if exists picpay cascade;
+
 create schema picpay;
 
 create table picpay.transaction (
@@ -6,5 +8,6 @@ create table picpay.transaction (
     payee_id uuid not null,
     amount numeric not null,
     type text not null,
+    status text not null,
     occured_at timestamp
 );

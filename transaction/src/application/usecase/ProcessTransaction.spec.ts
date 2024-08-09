@@ -1,11 +1,11 @@
 import { AuthorizeGateway } from "./../gateway/AuthorizeGateway";
 import { HttpClient } from "./../../infra/http/HttpClient";
-import { TransactionRepositoryMemory } from "../../../test/repository/TransactionRepositoryMemory";
 import { AuthorizeGatewayHttp } from "../../infra/gateway/AuthorizeGatewayHttp";
 import { GetTransaction } from "./GetTransaction";
 import { ProcessTransaction } from "./ProcessTransaction";
 import { TransactionRepository } from "../repository/TransactionRepository";
-import { Queue } from "../queue/queue";
+import { Queue } from "../queue/Queue";
+import { TransactionRepositoryMemory } from "../../../test/repository/TransactionRepositoryMemory";
 
 let httpClient: HttpClient;
 let queue: Queue;
@@ -24,7 +24,6 @@ beforeEach(() => {
     consume: jest.fn(),
     publish: jest.fn(),
     close: jest.fn(),
-    setup: jest.fn(),
   };
   authorizeGateway = new AuthorizeGatewayHttp(httpClient);
   transactionRepository = new TransactionRepositoryMemory();
@@ -32,7 +31,7 @@ beforeEach(() => {
   sut = new ProcessTransaction(transactionRepository, authorizeGateway, queue);
 });
 
-test("Deve ser possivel criar uma transaction aprovada", async () => {
+it("should be possible to create an approved transaction", async () => {
   (httpClient.get as jest.Mock).mockResolvedValue({
     status: "success",
     data: {
@@ -65,7 +64,7 @@ test("Deve ser possivel criar uma transaction aprovada", async () => {
   expect(outputGetTransaction.status).toBe("approved");
 });
 
-test("Deve ser possivel criar uma transaction rejeitada", async () => {
+it("should be possible to create a rejected transaction", async () => {
   (httpClient.get as jest.Mock).mockResolvedValue({
     status: "fail",
     data: {

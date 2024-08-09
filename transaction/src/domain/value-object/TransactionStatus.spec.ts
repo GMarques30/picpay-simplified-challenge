@@ -12,7 +12,7 @@ beforeEach(() => {
   );
 });
 
-test("Deve ser possivel criar uma transaction com status pending", () => {
+it("should be possible to create a transaction with pending status", () => {
   const transactionStatus = TransactionStatusFactory.create(
     transaction,
     "pending"
@@ -20,7 +20,7 @@ test("Deve ser possivel criar uma transaction com status pending", () => {
   expect(transactionStatus.value).toBe("pending");
 });
 
-test("Deve ser possivel criar uma transaction com status approved", () => {
+it("should be possible to create a transaction with approved status", () => {
   const transactionStatus = TransactionStatusFactory.create(
     transaction,
     "approved"
@@ -28,7 +28,7 @@ test("Deve ser possivel criar uma transaction com status approved", () => {
   expect(transactionStatus.value).toBe("approved");
 });
 
-test("Deve ser possivel criar uma transaction com status rejected", () => {
+it("should be possible to create a transaction with a rejected status", () => {
   const transactionStatus = TransactionStatusFactory.create(
     transaction,
     "rejected"
@@ -36,44 +36,44 @@ test("Deve ser possivel criar uma transaction com status rejected", () => {
   expect(transactionStatus.value).toBe("rejected");
 });
 
-test("Não deve ser possivel criar uma transaction status com o status inválido", () => {
+it("should not be possible to create a transaction status with an invalid status", () => {
   expect(async () =>
     TransactionStatusFactory.create(transaction, "invalid")
   ).rejects.toThrow(new Error("Invalid status"));
 });
 
-test("Deve ser possivel alterar o status de uma transaction de pending para approved", () => {
+it("should be possible to change the status of a transaction from pending to approved", () => {
   transaction.approve();
   expect(transaction.getStatus()).toBe("approved");
 });
 
-test("Deve ser possivel alterar o status de uma transaction de pending para rejected", () => {
+it("should be possible to change the status of a transaction from pending to rejected", () => {
   transaction.reject();
   expect(transaction.getStatus()).toBe("rejected");
 });
 
-test("Não deve ser possivel aprovar uma transaction já aprovada", () => {
+it("should not be possible to approve a transaction that has already been approved", () => {
   transaction.approve();
   expect(async () => transaction.approve()).rejects.toThrow(
     new Error("Invalid status")
   );
 });
 
-test("Não deve ser possivel rejeitar uma transaction já aprovada", () => {
+it("should not be possible to reject a transaction that has already been approved", () => {
   transaction.approve();
   expect(async () => transaction.reject()).rejects.toThrow(
     new Error("Invalid status")
   );
 });
 
-test("Não deve ser possivel aprovar uma transaction já rejeitada", () => {
+it("should not be possible to approve a transaction that has already been rejected", () => {
   transaction.reject();
   expect(async () => transaction.approve()).rejects.toThrow(
     new Error("Invalid status")
   );
 });
 
-test("Não deve ser possivel rejeitar uma transaction já rejeitada", () => {
+it("should not be possible to reject a transaction that has already been rejected", () => {
   transaction.reject();
   expect(async () => transaction.reject()).rejects.toThrow(
     new Error("Invalid status")

@@ -1,4 +1,4 @@
-import { Queue } from "../../application/queue/queue";
+import { Queue } from "../../application/queue/Queue";
 import { ProcessTransaction } from "../../application/usecase/ProcessTransaction";
 
 export class QueueController {

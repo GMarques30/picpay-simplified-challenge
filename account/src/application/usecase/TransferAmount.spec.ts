@@ -4,7 +4,7 @@ import { DepositAmount } from "./DepositAmount";
 import { TransferAmount } from "./TransferAmount";
 import { AccountRepository } from "../repository/AccountRepository";
 import { AccountRepositoryMemory } from "../../../test/repository/AccountRepositoryMemory";
-import { Queue } from "../queue/queue";
+import { Queue } from "../queue/Queue";
 
 let accountRepository: AccountRepository;
 let createAccount: CreateAccount;
@@ -19,7 +19,6 @@ beforeEach(() => {
     consume: jest.fn(),
     publish: jest.fn(),
     close: jest.fn(),
-    setup: jest.fn(),
   };
   accountRepository = new AccountRepositoryMemory();
   createAccount = new CreateAccount(accountRepository);
@@ -141,5 +140,28 @@ it("should not be possible to make a transfer if the payer is a seller", async (
   };
   expect(async () => await sut.execute(inputTransferAmount)).rejects.toThrow(
     new Error("Sellers cannot make transfers")
+  );
+});
+
+it("should not be possible to make a transfer if the payee is non-existing", async () => {
+  const inputCreateAccount1 = {
+    name: "John Doe",
+    document: "90689024000192",
+    email: `johndoe${Math.random()}@example.com`,
+    password: "Abc@123",
+  };
+  const outputCreateAccount1 = await createAccount.execute(inputCreateAccount1);
+  const inputDepositAmount = {
+    accountId: outputCreateAccount1.accountId,
+    amount: 100,
+  };
+  await depositAmount.execute(inputDepositAmount);
+  const inputTransferAmount = {
+    payerId: outputCreateAccount1.accountId,
+    payeeId: crypto.randomUUID(),
+    amount: 50,
+  };
+  expect(async () => await sut.execute(inputTransferAmount)).rejects.toThrow(
+    new Error("Account not found")
   );
 });

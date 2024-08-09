@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import { Queue } from "../../application/queue/Queue";
 import amqp, { Connection, Channel } from "amqplib";
 
@@ -7,7 +6,7 @@ export class RabbitMQAdapter implements Queue {
   private channel!: Channel;
 
   async connect(): Promise<void> {
-    this.connection = await amqp.connect("amqp://rabbitmq");
+    this.connection = await amqp.connect(process.env.RABBITMQ_URL!);
     this.channel = await this.connection.createChannel();
   }
 
@@ -21,13 +20,9 @@ export class RabbitMQAdapter implements Queue {
 
   async consume(queue: string, callback: Function): Promise<void> {
     this.channel.consume(queue, async (message: any) => {
-      try {
-        const input = JSON.parse(message.content.toString());
-        await callback(input);
-        this.channel.ack(message);
-      } catch (err: any) {
-        this.channel.nack(message);
-      }
+      const input = JSON.parse(message.content.toString());
+      await callback(input);
+      this.channel.ack(message);
     });
   }
 }

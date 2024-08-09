@@ -57,7 +57,7 @@ A aplicação faz uso dos seguintes conceitos:
 - SOLID
 - Design Patterns
 - Gateway Pattern
-- Retry Pattern
+- Unit of Work Pattern
 
 ## Tecnologias
 
@@ -71,27 +71,35 @@ A aplicação faz uso dos seguintes conceitos:
 
 ## Arquitetura
 
-A partir do diagrama de classes abaixo, é possível entender melhor a estrutura da aplicação.
+A partir dos diagramas abaixo é possível entender um pouco melhor sobre a arquitetura da aplicação.
 
-![Diagrama de classe](resources/diagrama-de-classe.png)
+![Diagrama de classe Account](resources/diagrama-de-classe-account.svg)
+
+---
+
+![Diagrama de classe Transaction](resources/diagrama-de-classe-transaction.svg)
+
+---
+
+![Diagrama de componentes](resources/diagrama-de-componentes.png)
 
 ## Como executar
 
 1. Clone o repositório do git:
 
-```typescript
+```bash
 git clone https://github.com/GMarques30/picpay-simplified-challenge.git
 ```
 
 2. Instale as dependências:
 
-```typescript
-yarn;
+```bash
+yarn
 ```
 
 3. Execute a aplicação:
 
-```typescript
+```bash
 docker-compose up --build -d
 ```
 
@@ -99,37 +107,41 @@ docker-compose up --build -d
 
 #### Para fazer um depósito
 
-```typescript
+```bash
 POST localhost:3000/deposit
 {
-    "accountId": 1,
+    "accountId": 21c7eee0-5090-4e9a-870a-6db221c3669e,
     "value": 100
 }
 ```
 
 #### Para fazer um saque
 
-```typescript
+```bash
 POST localhost:3000/withdraw
 {
-    "accountId": 1,
+    "accountId": 21c7eee0-5090-4e9a-870a-6db221c3669e,
     "value": 100
 }
 ```
 
 #### Para criar nova transferência
 
-```typescript
+```bash
 POST localhost:3000/transfer
 {
-    "payerId": 1,
-    "payeeId": 2,
+    "payerId": 21c7eee0-5090-4e9a-870a-6db221c3669e,
+    "payeeId": 89fa74bf-6489-4bb2-85d8-d1bd40337bf9,
     "value": 100
 }
 ```
 
 #### Para visualizar uma conta
 
-```typescript
-GET localhost:3000/accounts/1
+```bash
+GET localhost:3000/accounts/21c7eee0-5090-4e9a-870a-6db221c3669e
 ```
+
+---
+
+#### Made by Giovanni Marques 👋 [See my LinkedIn](https://www.linkedin.com/in/gmarques30/)
